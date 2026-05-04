@@ -1,0 +1,23 @@
+{
+  "accuracy": 0.5875,
+  "cv_mean": 0.585,
+  "cv_std": 0.0298,
+  "samples": 1200,
+  "train_samples": 960,
+  "test_samples": 240,
+  "features": 19,
+  "grade_distribution": {
+    "A": 59,
+    "B": 195,
+    "C": 490,
+    "D": 286,
+    "F": 170
+  },
+  "classes": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "F"
+  ]
+}
