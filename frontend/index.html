@@ -3,521 +3,951 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>EduPredict — Student Performance Calculator</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>EduPredict — University Performance Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:#eef1f6;color:#1a1d23;min-height:100vh;font-size:14px}
-.header{background:#fff;border-bottom:1px solid #d9dee8;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
-.header-left{display:flex;align-items:center;gap:10px}
-.logo-mark{width:30px;height:30px;background:#1a56db;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0}
-.logo-text{font-size:15px;font-weight:600;color:#1a1d23;letter-spacing:-0.2px}
+body{font-family:'DM Sans',sans-serif;background:#eef1f6;color:#1a1d23;font-size:14px;min-height:100vh}
+
+/* HEADER */
+.header{background:#fff;border-bottom:1px solid #d9dee8;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:200;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:30px;height:30px;background:#1a56db;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700}
+.logo-text{font-size:15px;font-weight:600;letter-spacing:-0.2px}
 .logo-text span{color:#1a56db}
-.header-center{display:flex;align-items:center;gap:6px}
-.stat-pill{font-size:11.5px;background:#f5f7fb;border:1px solid #dde2ea;border-radius:20px;padding:3px 10px;color:#6b7280;font-family:'DM Mono',monospace}
-.stat-pill strong{color:#1a1d23;font-weight:500}
+.header-pills{display:flex;gap:6px}
+.pill{font-size:11px;background:#f5f7fb;border:1px solid #dde2ea;border-radius:20px;padding:3px 10px;color:#6b7280;font-family:'DM Mono',monospace}
+.pill strong{color:#1a1d23;font-weight:500}
 .mode-toggle{display:flex;background:#f0f3f8;border:1px solid #d9dee8;border-radius:9px;padding:3px;gap:2px}
-.mode-btn{padding:5px 18px;font-size:12px;font-weight:600;border:none;border-radius:7px;cursor:pointer;background:transparent;color:#6b7280;font-family:'DM Sans',sans-serif;transition:all 0.15s;letter-spacing:0.2px}
+.mode-btn{padding:5px 16px;font-size:12px;font-weight:600;border:none;border-radius:7px;cursor:pointer;background:transparent;color:#6b7280;font-family:'DM Sans',sans-serif;transition:all 0.15s}
 .mode-btn.active{background:#fff;color:#1a56db;box-shadow:0 1px 4px rgba(0,0,0,0.10)}
-.page{max-width:1080px;margin:0 auto;padding:24px 20px 60px}
-.page-head{margin-bottom:20px}
-.page-head h1{font-size:19px;font-weight:600;margin-bottom:3px;letter-spacing:-0.3px}
-.page-head p{font-size:13px;color:#6b7280}
-.tab-bar{display:flex;border-bottom:1px solid #d9dee8;margin-bottom:22px}
+
+/* PAGE */
+.page{max-width:1100px;margin:0 auto;padding:24px 20px 80px}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid #d9dee8;margin-bottom:22px}
 .tab{padding:9px 18px;font-size:13px;font-weight:500;cursor:pointer;color:#6b7280;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.15s}
 .tab:hover{color:#1a1d23}
 .tab.active{color:#1a56db;border-bottom-color:#1a56db}
-.semester-block{background:#fff;border:1px solid #d9dee8;border-radius:10px;margin-bottom:18px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
-.sem-title-bar{background:#e8eff9;padding:8px 14px;border-bottom:1px solid #c6d4ee;display:flex;align-items:center;justify-content:space-between}
-.sem-title-input{background:transparent;border:none;font-size:13px;font-weight:600;color:#1e3a5f;font-family:'DM Sans',sans-serif;width:220px;outline:none}
-.sem-del-btn{background:none;border:1px solid #d9dee8;border-radius:6px;padding:3px 8px;font-size:11px;color:#6b7280;cursor:pointer;font-family:'DM Sans',sans-serif}
-.sem-del-btn:hover{border-color:#f87171;color:#f87171;background:#fff5f5}
+
+/* DASHBOARD CARDS */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.dash-card{background:#fff;border:1px solid #d9dee8;border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.dash-card.blue{border-color:#1a56db;background:#f0f5ff}
+.dash-card .dc-label{font-size:10.5px;color:#9aa5b8;text-transform:uppercase;letter-spacing:0.6px;font-weight:600;margin-bottom:5px}
+.dash-card .dc-val{font-size:26px;font-weight:600;font-family:'DM Mono',monospace;color:#1a1d23;line-height:1.1}
+.dash-card.blue .dc-val{color:#1a56db}
+.dash-card .dc-sub{font-size:12px;color:#9aa5b8;margin-top:3px}
+
+/* DEGREE CLASS BANNER */
+.class-banner{border-radius:10px;padding:16px 20px;margin-bottom:20px;border:1px solid;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.class-banner.first{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
+.class-banner.upper{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}
+.class-banner.lower{background:#fefce8;border-color:#fde68a;color:#854d0e}
+.class-banner.third{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+.class-banner.fail{background:#fef2f2;border-color:#fecaca;color:#991b1b}
+.class-banner .cb-title{font-size:15px;font-weight:600}
+.class-banner .cb-sub{font-size:12.5px;opacity:0.8;margin-top:2px}
+.class-banner .cb-cwa{font-size:22px;font-weight:700;font-family:'DM Mono',monospace}
+
+/* FIRST CLASS TARGET BOX */
+.target-box{background:#fff;border:1px solid #d9dee8;border-radius:10px;padding:18px 20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.target-box h3{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.target-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.target-card{border-radius:8px;padding:12px 14px;border:1px solid}
+.target-card .tc-class{font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px}
+.target-card .tc-need{font-size:20px;font-weight:600;font-family:'DM Mono',monospace;margin-bottom:2px}
+.target-card .tc-detail{font-size:11.5px;opacity:0.8}
+.target-card .tc-impossible{font-size:13px;font-weight:600;opacity:0.7}
+.tc-first{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
+.tc-upper{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}
+.tc-lower{background:#fefce8;border-color:#fde68a;color:#854d0e}
+.tc-third{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+.tc-achieved{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
+
+/* PROGRESS BAR */
+.progress-wrap{margin-bottom:20px}
+.progress-label{font-size:12px;color:#6b7280;margin-bottom:6px;display:flex;justify-content:space-between}
+.progress-track{height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#1a56db,#3b82f6);transition:width 0.6s ease}
+
+/* LEVEL BLOCKS */
+.level-block{background:#fff;border:1px solid #d9dee8;border-radius:10px;margin-bottom:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.level-header{background:#1e3a5f;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.level-header h3{font-size:13px;font-weight:600;color:#fff}
+.level-status{display:flex;gap:6px;align-items:center}
+.status-btn{font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);background:transparent;color:rgba(255,255,255,0.7);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.status-btn.active-status{background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.6)}
+.level-cwa{font-size:12px;font-family:'DM Mono',monospace;color:#93c5fd;font-weight:500}
+
+/* SEM BLOCK */
+.sem-block{border-top:1px solid #d9dee8}
+.sem-title-bar{background:#e8eff9;padding:7px 14px;border-bottom:1px solid #c6d4ee;display:flex;align-items:center;justify-content:space-between}
+.sem-title{font-size:12.5px;font-weight:600;color:#1e3a5f}
+.sem-swa{font-size:12px;font-family:'DM Mono',monospace;color:#1a56db;font-weight:500}
+
+/* TABLE */
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{background:#f8f9fc;padding:8px 10px;text-align:left;font-weight:600;font-size:11.5px;color:#6b7280;border-bottom:1px solid #d9dee8;letter-spacing:0.3px;text-transform:uppercase;white-space:nowrap}
+thead th{background:#f8f9fc;padding:7px 10px;text-align:left;font-weight:600;font-size:11px;color:#6b7280;border-bottom:1px solid #d9dee8;letter-spacing:0.4px;text-transform:uppercase;white-space:nowrap}
 th.num,td.num{text-align:center}
-tbody td{padding:7px 10px;border-bottom:1px solid #eff1f5;vertical-align:middle}
+tbody td{padding:6px 10px;border-bottom:1px solid #eff1f5;vertical-align:middle}
 tbody tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:#f8f9fc}
-.course-name-input{width:100%;border:none;background:transparent;font-size:13px;color:#1a1d23;font-family:'DM Sans',sans-serif;outline:none}
-.course-name-input::placeholder{color:#c0c8d8}
-.num-input{width:62px;padding:4px 6px;font-size:12.5px;border:1px solid #e0e4ed;border-radius:6px;background:#f8f9fc;color:#1a1d23;text-align:center;font-family:'DM Mono',monospace;outline:none;transition:border-color 0.15s}
+.course-input{width:100%;border:none;background:transparent;font-size:13px;color:#1a1d23;font-family:'DM Sans',sans-serif;outline:none}
+.course-input::placeholder{color:#c0c8d8}
+.num-input{width:58px;padding:3px 5px;font-size:12px;border:1px solid #e0e4ed;border-radius:5px;background:#f8f9fc;color:#1a1d23;text-align:center;font-family:'DM Mono',monospace;outline:none;transition:border-color 0.15s}
 .num-input:focus{border-color:#1a56db;background:#fff}
-.cr-select{padding:4px 6px;font-size:12.5px;border:1px solid #e0e4ed;border-radius:6px;background:#f8f9fc;color:#1a1d23;font-family:'DM Mono',monospace;outline:none;cursor:pointer}
-.computed{font-family:'DM Mono',monospace;font-size:12.5px;color:#374151}
-.badge{display:inline-block;padding:2px 9px;border-radius:5px;font-size:12px;font-weight:600;min-width:28px;text-align:center;font-family:'DM Mono',monospace}
+.cr-sel{padding:3px 5px;font-size:12px;border:1px solid #e0e4ed;border-radius:5px;background:#f8f9fc;color:#1a1d23;font-family:'DM Mono',monospace;outline:none}
+.computed{font-family:'DM Mono',monospace;font-size:12px;color:#374151}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11.5px;font-weight:600;text-align:center;font-family:'DM Mono',monospace;min-width:26px}
 .gA{background:#dcfce7;color:#166534}.gB{background:#dbeafe;color:#1e40af}
 .gC{background:#fef9c3;color:#854d0e}.gD{background:#ffedd5;color:#9a3412}
-.gF{background:#fee2e2;color:#991b1b}.gDash{color:#c0c8d8;font-size:13px}
-.summary-row td{background:#f0f5ff;font-size:12.5px;color:#374151;border-top:1px solid #c6d4ee;padding:8px 14px;text-align:right;font-weight:500}
+.gF{background:#fee2e2;color:#991b1b}.gDash{color:#c0c8d8}
+.future-row td{background:#fafbff}
+.future-badge{font-size:10px;padding:1px 6px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;color:#1e40af;font-weight:600}
+.resit-badge{font-size:10px;padding:1px 6px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;color:#9a3412;font-weight:600}
+.sum-row td{background:#f0f5ff;font-size:12px;color:#374151;border-top:1px solid #c6d4ee;padding:6px 14px;text-align:right;font-weight:500}
 .hi{color:#1a56db;font-weight:600}
-.add-course-row{padding:7px 14px;border-top:1px solid #eff1f5}
-.add-course-btn{width:100%;background:none;border:1px dashed #c8d0e0;border-radius:7px;padding:6px;font-size:12.5px;color:#9aa5b8;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
-.add-course-btn:hover{border-color:#1a56db;color:#1a56db;background:#f0f5ff}
-.row-del{background:none;border:none;color:#d0d5df;cursor:pointer;font-size:16px;line-height:1;padding:0 2px;transition:color 0.15s}
+.add-course-row{padding:6px 14px;border-top:1px solid #eff1f5;display:flex;gap:8px}
+.add-btn{background:none;border:1px dashed #c8d0e0;border-radius:6px;padding:5px 12px;font-size:12px;color:#9aa5b8;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.add-btn:hover{border-color:#1a56db;color:#1a56db;background:#f0f5ff}
+.row-del{background:none;border:none;color:#d0d5df;cursor:pointer;font-size:15px;padding:0 2px;transition:color 0.15s;line-height:1}
 .row-del:hover{color:#f87171}
-.add-sem-btn{background:#fff;border:1px dashed #c8d0e0;border-radius:10px;padding:11px;width:100%;font-size:13px;color:#9aa5b8;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px}
-.add-sem-btn:hover{border-color:#1a56db;color:#1a56db;background:#f0f5ff}
-.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin-bottom:22px}
-.metric-card{background:#fff;border:1px solid #d9dee8;border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
-.metric-card .m-label{font-size:10.5px;color:#9aa5b8;text-transform:uppercase;letter-spacing:0.6px;font-weight:600;margin-bottom:6px}
-.metric-card .m-val{font-size:24px;font-weight:600;font-family:'DM Mono',monospace;color:#1a1d23;letter-spacing:-0.5px;line-height:1.1}
-.metric-card .m-sub{font-size:12px;color:#9aa5b8;margin-top:3px;display:flex;align-items:center;gap:5px}
-.metric-card.highlight{border-color:#1a56db;background:#f0f5ff}
-.metric-card.highlight .m-val{color:#1a56db}
-.summary-section{background:#fff;border:1px solid #d9dee8;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);margin-bottom:16px}
-.summary-section-title{background:#e8eff9;padding:8px 14px;font-size:12.5px;font-weight:600;color:#1e3a5f;border-bottom:1px solid #c6d4ee}
-.level-footer{text-align:right;padding:10px 16px;font-size:12.5px;font-weight:600;color:#374151;background:#fff;border:1px solid #d9dee8;border-radius:10px;margin-bottom:18px}
-.level-footer span{color:#1a56db}
-.predict-section{background:#fff;border:1px solid #d9dee8;border-radius:10px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
-.predict-section h3{font-size:14px;font-weight:600;margin-bottom:14px}
-.predict-btn{background:#1a56db;color:#fff;border:none;border-radius:8px;padding:11px 24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;display:inline-flex;align-items:center;gap:8px}
-.predict-btn:hover{background:#1648c0;box-shadow:0 4px 12px rgba(26,86,219,0.28)}
-.predict-btn:active{transform:translateY(1px)}
-.predict-btn.loading{opacity:0.7;pointer-events:none}
-.predict-result{margin-top:16px;padding:16px;background:#f8f9fc;border-radius:8px;border:1px solid #d9dee8}
-.predict-grade{font-size:52px;font-weight:700;font-family:'DM Mono',monospace;color:#1a56db;line-height:1}
-.predict-meta{font-size:12.5px;color:#6b7280;margin-top:4px}
-.risk-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;margin-top:8px}
-.risk-Low{background:#dcfce7;color:#166534}.risk-Medium{background:#fef9c3;color:#854d0e}.risk-High{background:#fee2e2;color:#991b1b}
-.prob-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.prob-label{font-family:'DM Mono',monospace;font-size:12px;font-weight:600;width:16px;text-align:center}
-.prob-track{flex:1;height:7px;background:#e5e7eb;border-radius:4px;overflow:hidden}
-.prob-fill{height:100%;border-radius:4px;transition:width 0.7s cubic-bezier(0.4,0,0.2,1)}
+
+/* WHAT-IF SIMULATOR */
+.whatif-box{background:#fff;border:1px solid #d9dee8;border-radius:10px;padding:18px 20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.whatif-box h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.whatif-box p{font-size:13px;color:#6b7280;margin-bottom:14px}
+.whatif-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.wi-field{display:flex;flex-direction:column;gap:5px}
+.wi-field label{font-size:12px;color:#6b7280;font-weight:500}
+.wi-field input{padding:7px 10px;border:1px solid #e0e4ed;border-radius:7px;font-size:13px;font-family:'DM Mono',monospace;outline:none;transition:border-color 0.15s}
+.wi-field input:focus{border-color:#1a56db}
+.wi-result{background:#f0f5ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 14px;font-size:13px;color:#1e40af}
+.wi-result strong{font-size:16px;font-family:'DM Mono',monospace}
+
+/* PREDICT */
+.predict-box{background:#fff;border:1px solid #d9dee8;border-radius:10px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.predict-box h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.predict-box p{font-size:13px;color:#6b7280;margin-bottom:14px}
+.pred-btn{background:#1a56db;color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;display:inline-flex;align-items:center;gap:7px}
+.pred-btn:hover{background:#1648c0;box-shadow:0 4px 12px rgba(26,86,219,0.25)}
+.pred-btn.loading{opacity:0.7;pointer-events:none}
+.pred-result{margin-top:14px;padding:14px;background:#f8f9fc;border-radius:8px;border:1px solid #d9dee8}
+.pred-grade{font-size:48px;font-weight:700;font-family:'DM Mono',monospace;color:#1a56db;line-height:1}
+.pred-meta{font-size:12px;color:#6b7280;margin-top:3px}
+.risk-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:20px;font-size:11.5px;font-weight:600;margin-top:6px}
+.rLow{background:#dcfce7;color:#166534}.rMedium{background:#fef9c3;color:#854d0e}.rHigh{background:#fee2e2;color:#991b1b}
+.prob-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.prob-lbl{font-family:'DM Mono',monospace;font-size:12px;font-weight:600;width:14px;text-align:center}
+.prob-track{flex:1;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden}
+.prob-fill{height:100%;border-radius:3px;transition:width 0.6s ease}
 .fA{background:#22c55e}.fB{background:#3b82f6}.fC{background:#eab308}.fD{background:#f97316}.fF{background:#ef4444}
-.prob-pct{font-family:'DM Mono',monospace;font-size:11px;color:#9aa5b8;width:38px;text-align:right}
-.rec{display:flex;gap:8px;padding:8px 10px;background:#fff;border-radius:7px;border:1px solid #e5e7eb;margin-bottom:6px;font-size:12.5px;color:#374151;line-height:1.5}
-.rec-icon{flex-shrink:0;font-size:15px}
-.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite}
+.prob-pct{font-family:'DM Mono',monospace;font-size:11px;color:#9aa5b8;width:36px;text-align:right}
+.rec{display:flex;gap:7px;padding:7px 10px;background:#fff;border-radius:6px;border:1px solid #e5e7eb;margin-bottom:5px;font-size:12.5px;color:#374151;line-height:1.5}
+.spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.error-box{background:#fff5f5;border:1px solid #fecaca;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:13px}
-.sub-label{font-size:10px;font-weight:600;color:#9aa5b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;margin-top:14px}
-@media(max-width:680px){
-  .header-center{display:none}
-  .page{padding:14px 10px 48px}
-  .metrics-grid{grid-template-columns:1fr 1fr}
+.err-box{background:#fff5f5;border:1px solid #fecaca;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:12px}
+.slbl{font-size:10.5px;font-weight:600;color:#9aa5b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;margin-top:12px}
+
+/* CHART */
+.chart-wrap{background:#fff;border:1px solid #d9dee8;border-radius:10px;padding:16px 20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.chart-wrap h3{font-size:14px;font-weight:600;margin-bottom:14px}
+.cwa-chart{display:flex;align-items:flex-end;gap:8px;height:120px;border-bottom:1px solid #e5e7eb;padding-bottom:4px;margin-bottom:8px}
+.cwa-bar-wrap{display:flex;flex-direction:column;align-items:center;flex:1;gap:3px;height:100%;justify-content:flex-end}
+.cwa-bar{width:100%;border-radius:4px 4px 0 0;transition:height 0.5s ease;min-height:4px;position:relative;cursor:default}
+.cwa-bar:hover::after{content:attr(data-tip);position:absolute;bottom:105%;left:50%;transform:translateX(-50%);background:#1a1d23;color:#fff;font-size:10px;padding:3px 7px;border-radius:5px;white-space:nowrap;font-family:'DM Mono',monospace;pointer-events:none}
+.cwa-bar-lbl{font-size:10px;color:#6b7280;font-family:'DM Mono',monospace;text-align:center}
+.cwa-bar-val{font-size:10px;font-weight:600;font-family:'DM Mono',monospace;text-align:center}
+.bar-done{background:#1a56db}
+.bar-proj{background:#93c5fd;border:1px dashed #1a56db}
+.chart-legend{display:flex;gap:14px;font-size:11px;color:#6b7280}
+.chart-legend span{display:flex;align-items:center;gap:4px}
+.leg-dot{width:10px;height:10px;border-radius:2px}
+
+/* EXPORT */
+.export-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.exp-btn{background:#fff;border:1px solid #d9dee8;border-radius:7px;padding:7px 14px;font-size:12.5px;font-weight:500;color:#374151;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;display:flex;align-items:center;gap:6px}
+.exp-btn:hover{border-color:#1a56db;color:#1a56db;background:#f0f5ff}
+
+@media(max-width:700px){
+  .header-pills{display:none}
+  .dash-grid{grid-template-columns:1fr 1fr}
+  .whatif-grid{grid-template-columns:1fr}
+  .page{padding:14px 10px 60px}
   table{font-size:12px}
-  .num-input{width:50px}
+  .num-input{width:48px}
 }
 </style>
 </head>
 <body>
 
 <header class="header">
-  <div class="header-left">
+  <div class="logo">
     <div class="logo-mark">EP</div>
     <div class="logo-text">Edu<span>Predict</span></div>
   </div>
-  <div class="header-center">
-    <div class="stat-pill">Accuracy <strong id="hAcc">—</strong></div>
-    <div class="stat-pill">Samples <strong id="hSamples">—</strong></div>
-    <div class="stat-pill">Model <strong>RF + GB Ensemble</strong></div>
+  <div class="header-pills">
+    <div class="pill">Accuracy <strong id="hAcc">—</strong></div>
+    <div class="pill">Model <strong>RF + GB</strong></div>
   </div>
   <div class="mode-toggle">
-    <button class="mode-btn active" id="modeGPA" onclick="setMode('GPA')">GPA</button>
-    <button class="mode-btn" id="modeCWA" onclick="setMode('CWA')">CWA</button>
+    <button class="mode-btn active" id="mGPA" onclick="setMode('GPA')">GPA</button>
+    <button class="mode-btn" id="mCWA" onclick="setMode('CWA')">CWA</button>
   </div>
 </header>
 
 <div class="page">
-  <div class="page-head">
-    <h1>Student Performance Calculator</h1>
-    <p id="modeDesc">GPA mode — grades mapped to 4.0 scale. Switch to CWA for cumulative weighted average (%).</p>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('grades')">Grade Entry</div>
+    <div class="tab" onclick="showTab('summary')">Summary</div>
+    <div class="tab" onclick="showTab('target')">First Class Target</div>
+    <div class="tab" onclick="showTab('predict')">AI Prediction</div>
   </div>
 
-  <div class="tab-bar">
-    <div class="tab active" onclick="showTab('entry')">Grade Entry</div>
-    <div class="tab" onclick="showTab('summary')">Summary &amp; Prediction</div>
+  <!-- GRADES TAB -->
+  <div id="tabGrades">
+    <div id="levelsContainer"></div>
   </div>
 
-  <div id="tabEntry">
-    <div id="semestersContainer"></div>
-    <button class="add-sem-btn" onclick="addSemester()">＋ Add Semester</button>
-  </div>
-
+  <!-- SUMMARY TAB -->
   <div id="tabSummary" style="display:none">
-    <div class="metrics-grid" id="metricsGrid"></div>
-    <div id="summaryContent"></div>
-    <div class="predict-section">
+    <div class="export-row">
+      <button class="exp-btn" onclick="exportCSV()">↓ Export CSV</button>
+      <button class="exp-btn" onclick="window.print()">↓ Print / Save PDF</button>
+    </div>
+    <div class="dash-grid" id="dashGrid"></div>
+    <div id="classBanner"></div>
+    <div class="chart-wrap">
+      <h3>CWA trend by semester</h3>
+      <div class="cwa-chart" id="cwaChart"></div>
+      <div class="chart-legend">
+        <span><div class="leg-dot bar-done"></div> Completed</span>
+        <span><div class="leg-dot bar-proj" style="border:1px dashed #1a56db"></div> Projected</span>
+        <div style="border-left:1px solid #e5e7eb;padding-left:14px;color:#6b7280" id="chartNote"></div>
+      </div>
+    </div>
+    <div id="summaryLevels"></div>
+  </div>
+
+  <!-- TARGET TAB -->
+  <div id="tabTarget" style="display:none">
+    <div class="target-box" style="margin-bottom:16px">
+      <h3>📊 Your current standing</h3>
+      <div id="targetDash"></div>
+    </div>
+    <div class="target-box">
+      <h3>🎯 What you need for each degree class</h3>
+      <div id="targetCards"></div>
+    </div>
+    <div class="whatif-box" style="margin-top:16px">
+      <h3>What-if simulator</h3>
+      <p>Adjust your hypothetical average score in remaining courses and see how it affects your final CWA.</p>
+      <div class="whatif-grid">
+        <div class="wi-field">
+          <label>Hypothetical avg score in remaining courses (%)</label>
+          <input type="number" id="wiScore" min="0" max="100" value="75" oninput="runWhatif()"/>
+        </div>
+        <div class="wi-field">
+          <label>Remaining credit hours (auto-filled)</label>
+          <input type="number" id="wiCr" min="0" max="200" value="60" oninput="runWhatif()"/>
+        </div>
+      </div>
+      <div class="wi-result" id="wiResult">Enter values above to simulate.</div>
+    </div>
+  </div>
+
+  <!-- AI PREDICTION TAB -->
+  <div id="tabPredict" style="display:none">
+    <div class="predict-box">
       <h3>🔮 AI Performance Prediction</h3>
-      <p style="font-size:13px;color:#6b7280;margin-bottom:14px">Based on your entered grades, our ML model predicts your expected final performance and gives personalised recommendations.</p>
-      <button class="predict-btn" id="predictBtn" onclick="runPrediction()">
-        <span id="btnIcon">✦</span>
-        <span id="btnText">Predict My Grade</span>
+      <p>Based on your entered grades, our ML model predicts your expected final performance and gives personalised recommendations.</p>
+      <button class="pred-btn" id="predBtn" onclick="runPrediction()">
+        <span id="predIcon">✦</span><span id="predText">Predict My Grade</span>
       </button>
-      <div id="predictResult" style="display:none"></div>
+      <div id="predResult"></div>
     </div>
   </div>
 </div>
 
 <script>
+// ─── STATE ───────────────────────────────────────────────────────────────────
 let mode = 'GPA';
-let semesters = [];
 
-// ── GRADE SCALE ───────────────────────────────────────────────────
+const LEVEL_NAMES = ['Level 100','Level 200','Level 300','Level 400'];
+const SEM_NAMES = ['Semester 1','Semester 2'];
+const DEGREE_CLASSES = [
+  {label:'First Class',min:80,cls:'first'},
+  {label:'Second Upper',min:75,cls:'upper'},
+  {label:'Second Lower',min:70,cls:'lower'},
+  {label:'Third Class',min:60,cls:'third'},
+];
 const SCALE = [{min:80,g:'A'},{min:70,g:'B'},{min:60,g:'C'},{min:50,g:'D'},{min:0,g:'F'}];
 const GP = {A:4,B:3,C:2,D:1,F:0};
 
-function scoreToGrade(s) {
-  if (s === '' || s === null || isNaN(s)) return '—';
-  for (const r of SCALE) if (parseFloat(s) >= r.min) return r.g;
+function defaultData() {
+  return LEVEL_NAMES.map((name,li) => ({
+    name,
+    status: li < 2 ? 'complete' : li === 2 ? 'inprogress' : 'future',
+    semesters: SEM_NAMES.map(sname => ({
+      name: sname,
+      courses: [
+        {name:'',ca:'',exam:'',crHrs:3,future:false,resit:false},
+        {name:'',ca:'',exam:'',crHrs:3,future:false,resit:false},
+        {name:'',ca:'',exam:'',crHrs:3,future:false,resit:false},
+      ]
+    }))
+  }));
+}
+
+// ─── LOAD / SAVE ─────────────────────────────────────────────────────────────
+function save() {
+  try { localStorage.setItem('edupredict_v2', JSON.stringify({mode, levels})); } catch(e){}
+}
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem('edupredict_v2'));
+    if (d && d.levels) { mode = d.mode || 'GPA'; return d.levels; }
+  } catch(e){}
+  return null;
+}
+
+let levels = load() || defaultData();
+
+// ─── GRADING ─────────────────────────────────────────────────────────────────
+function toGrade(s) {
+  if (s===''||s===null||isNaN(s)) return '—';
+  for (const r of SCALE) if (parseFloat(s)>=r.min) return r.g;
   return 'F';
 }
-function calcScore(ca, exam) {
-  if (ca === '' && exam === '') return '';
-  return Math.min(100, (parseFloat(ca)||0) + (parseFloat(exam)||0));
+function calcScore(ca,exam) {
+  if (ca===''&&exam==='') return '';
+  return Math.min(100,(parseFloat(ca)||0)+(parseFloat(exam)||0));
 }
-function weightedAvg(score, crHrs) {
-  if (score === '' || crHrs === 0) return '—';
-  const g = scoreToGrade(score);
-  if (g === '—') return '—';
-  // CWA: GP * crHrs * 20 (as shown in transcript)
-  // GPA: GP * crHrs  (contribution to GPA points)
-  return mode === 'CWA'
-    ? (GP[g] * crHrs * 20).toFixed(1)
-    : (GP[g] * crHrs).toFixed(2);
+function waVal(score,crHrs) {
+  if (score===''||crHrs===0) return null;
+  const g=toGrade(score); if(g==='—') return null;
+  return mode==='CWA' ? GP[g]*crHrs*20 : GP[g]*crHrs;
 }
-function semesterSummary(si) {
-  let points = 0, cr = 0;
-  for (const c of semesters[si].courses) {
-    const h = parseFloat(c.crHrs)||0;
-    if (h === 0 || (c.ca===''&&c.exam==='')) continue;
-    const s = calcScore(c.ca, c.exam);
-    if (s === '') continue;
-    const g = scoreToGrade(s);
-    points += mode==='CWA' ? GP[g]*h*20 : GP[g]*h;
-    cr += h;
+function semStats(sem) {
+  let pts=0,cr=0;
+  for (const c of sem.courses) {
+    if (c.future||c.crHrs===0) continue;
+    if (c.ca===''&&c.exam==='') continue;
+    const s=calcScore(c.ca,c.exam); if(s==='') continue;
+    const g=toGrade(s);
+    let effectiveGP = GP[g];
+    if (c.resit && effectiveGP > GP['D']) effectiveGP = GP['D']; // resit cap
+    pts += mode==='CWA' ? effectiveGP*c.crHrs*20 : effectiveGP*c.crHrs;
+    cr += parseInt(c.crHrs)||0;
   }
-  if (!cr) return {val:'—', grade:'—', cr:0};
-  const val = (points/cr).toFixed(2);
-  let grade;
-  if (mode==='CWA') grade = scoreToGrade(parseFloat(val));
-  else { const v=parseFloat(val); grade = v>=3.5?'A':v>=2.5?'B':v>=1.5?'C':v>=0.5?'D':'F'; }
-  return {val, grade, cr};
+  if (!cr) return {val:'—',grade:'—',cr:0};
+  const v=(pts/cr).toFixed(2);
+  const g=mode==='CWA'?toGrade(parseFloat(v)):gpToGrade(parseFloat(v));
+  return {val:parseFloat(v).toFixed(2),grade:g,cr};
 }
-function overallSummary() {
-  let points=0, cr=0, scores=[];
-  for (const sem of semesters) {
+function levelStats(lv) {
+  let pts=0,cr=0;
+  for (const sem of lv.semesters) {
     for (const c of sem.courses) {
-      const h=parseFloat(c.crHrs)||0;
-      if (h===0||(c.ca===''&&c.exam==='')) continue;
-      const s=calcScore(c.ca,c.exam);
-      if (s==='') continue;
-      const g=scoreToGrade(s);
-      points += mode==='CWA'?GP[g]*h*20:GP[g]*h;
-      cr+=h; scores.push(parseFloat(s));
+      if (c.future||c.crHrs===0) continue;
+      if (c.ca===''&&c.exam==='') continue;
+      const s=calcScore(c.ca,c.exam); if(s==='') continue;
+      const g=toGrade(s);
+      let effectiveGP=GP[g];
+      if(c.resit && effectiveGP>GP['D']) effectiveGP=GP['D'];
+      pts += mode==='CWA'?effectiveGP*c.crHrs*20:effectiveGP*c.crHrs;
+      cr+=parseInt(c.crHrs)||0;
     }
   }
-  if (!cr) return {val:'—',grade:'—',cr:0,scores};
-  const val=(points/cr).toFixed(2);
-  let grade;
-  if (mode==='CWA') grade=scoreToGrade(parseFloat(val));
-  else { const v=parseFloat(val); grade=v>=3.5?'A':v>=2.5?'B':v>=1.5?'C':v>=0.5?'D':'F'; }
-  return {val,grade,cr,scores};
+  if(!cr) return {val:'—',cr:0};
+  return {val:(pts/cr).toFixed(2),cr};
+}
+function overallStats() {
+  let pts=0,cr=0,scores=[],futCr=0;
+  for (const lv of levels) {
+    for (const sem of lv.semesters) {
+      for (const c of sem.courses) {
+        const h=parseInt(c.crHrs)||0;
+        if (c.future) { futCr+=h; continue; }
+        if (h===0||c.ca===''&&c.exam==='') continue;
+        const s=calcScore(c.ca,c.exam); if(s==='') continue;
+        const g=toGrade(s);
+        let effectiveGP=GP[g];
+        if(c.resit&&effectiveGP>GP['D']) effectiveGP=GP['D'];
+        pts+=mode==='CWA'?effectiveGP*h*20:effectiveGP*h;
+        cr+=h; scores.push(parseFloat(s));
+      }
+    }
+  }
+  if(!cr) return {val:'—',grade:'—',cr:0,scores,futCr};
+  const v=parseFloat((pts/cr).toFixed(2));
+  const g=mode==='CWA'?toGrade(v):gpToGrade(v);
+  return {val:v.toFixed(2),grade:g,cr,scores,futCr};
+}
+function gpToGrade(v) {
+  return v>=3.5?'A':v>=2.5?'B':v>=1.5?'C':v>=0.5?'D':'F';
+}
+function degreeClass(cwa) {
+  if (cwa==='—') return null;
+  const v=parseFloat(cwa);
+  if (mode==='GPA') {
+    if(v>=3.5)return DEGREE_CLASSES[0];
+    if(v>=3.0)return DEGREE_CLASSES[1];
+    if(v>=2.5)return DEGREE_CLASSES[2];
+    if(v>=2.0)return DEGREE_CLASSES[3];
+    return null;
+  }
+  for (const d of DEGREE_CLASSES) if(v>=d.min) return d;
+  return null;
 }
 
-// ── MODE ──────────────────────────────────────────────────────────
+// ─── MODE ────────────────────────────────────────────────────────────────────
 function setMode(m) {
-  mode = m;
-  document.getElementById('modeGPA').classList.toggle('active', m==='GPA');
-  document.getElementById('modeCWA').classList.toggle('active', m==='CWA');
-  document.getElementById('modeDesc').textContent = m==='GPA'
-    ? 'GPA mode — grades mapped to 4.0 scale (A=4.0, B=3.0, C=2.0, D=1.0, F=0.0).'
-    : 'CWA mode — Cumulative Weighted Average as a percentage. Weighted Avg = Grade Points × Credit Hrs × 20.';
-  renderAll();
+  mode=m;
+  document.getElementById('mGPA').classList.toggle('active',m==='GPA');
+  document.getElementById('mCWA').classList.toggle('active',m==='CWA');
+  save(); renderGrades();
 }
 
-// ── RENDER ENTRY TAB ──────────────────────────────────────────────
-function renderAll() {
-  const container = document.getElementById('semestersContainer');
-  container.innerHTML = '';
-  semesters.forEach((sem, si) => {
-    const colHeader = mode==='CWA' ? 'Weighted Avg.' : 'GP × Cr';
-    const block = document.createElement('div');
-    block.className = 'semester-block';
-    block.innerHTML = `
-      <div class="sem-title-bar">
-        <input class="sem-title-input" value="${sem.name}" onchange="semesters[${si}].name=this.value"/>
-        <button class="sem-del-btn" onclick="deleteSemester(${si})">Remove</button>
-      </div>
-      <table>
-        <thead><tr>
-          <th style="width:36%">Course Name / Course Code</th>
-          <th class="num">CA</th>
-          <th class="num">Exam</th>
-          <th class="num">Score</th>
-          <th class="num">Cr. Hrs.</th>
-          <th class="num">Grade</th>
-          <th class="num">${colHeader}</th>
-          <th style="width:24px"></th>
-        </tr></thead>
-        <tbody id="tbody-${si}"></tbody>
-        <tfoot><tr class="summary-row" id="semSum-${si}"><td colspan="8">&nbsp;</td></tr></tfoot>
-      </table>
-      <div class="add-course-row">
-        <button class="add-course-btn" onclick="addCourse(${si})">＋ Add Course</button>
+// ─── TABS ────────────────────────────────────────────────────────────────────
+const TAB_IDS = {grades:'tabGrades',summary:'tabSummary',target:'tabTarget',predict:'tabPredict'};
+function showTab(t) {
+  Object.entries(TAB_IDS).forEach(([k,id])=>document.getElementById(id).style.display=k===t?'block':'none');
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    const keys=Object.keys(TAB_IDS);
+    el.classList.toggle('active',keys[i]===t);
+  });
+  if(t==='summary') renderSummary();
+  if(t==='target') renderTarget();
+}
+
+// ─── RENDER GRADES TAB ───────────────────────────────────────────────────────
+function renderGrades() {
+  const container=document.getElementById('levelsContainer');
+  container.innerHTML='';
+  levels.forEach((lv,li)=>{
+    const lvStats=levelStats(lv);
+    const block=document.createElement('div');
+    block.className='level-block';
+    block.innerHTML=`
+      <div class="level-header">
+        <h3>${lv.name}</h3>
+        <div class="level-status">
+          ${['complete','inprogress','future'].map(s=>`
+            <button class="status-btn${lv.status===s?' active-status':''}" onclick="setStatus(${li},'${s}')">
+              ${s==='complete'?'✓ Complete':s==='inprogress'?'In Progress':'Future'}
+            </button>`).join('')}
+        </div>
+        <div class="level-cwa">${lvStats.val!=='—'?`CWA: ${lvStats.val}${mode==='CWA'?'%':'/4.0'}`:'No data yet'}</div>
       </div>`;
+    lv.semesters.forEach((sem,si)=>{
+      const ss=semStats(sem);
+      const semDiv=document.createElement('div');
+      semDiv.className='sem-block';
+      const colH=mode==='CWA'?'Weighted Avg.':'GP × Cr';
+      semDiv.innerHTML=`
+        <div class="sem-title-bar">
+          <span class="sem-title">${sem.name}</span>
+          <span class="sem-swa">${ss.val!=='—'?`SWA: ${ss.val}${mode==='CWA'?'%':''} · Grade: ${ss.grade}`:''}</span>
+        </div>
+        <table>
+          <thead><tr>
+            <th style="width:32%">Course Name / Code</th>
+            <th class="num">CA <span style="font-weight:400;opacity:0.6">/40</span></th>
+            <th class="num">Exam <span style="font-weight:400;opacity:0.6">/60</span></th>
+            <th class="num">Score</th>
+            <th class="num">Cr. Hrs</th>
+            <th class="num">Grade</th>
+            <th class="num">${colH}</th>
+            <th class="num">Type</th>
+            <th style="width:22px"></th>
+          </tr></thead>
+          <tbody id="tb-${li}-${si}"></tbody>
+          <tfoot><tr class="sum-row" id="sum-${li}-${si}"><td colspan="9">&nbsp;</td></tr></tfoot>
+        </table>
+        <div class="add-course-row">
+          <button class="add-btn" onclick="addCourse(${li},${si},false)">+ Add Course</button>
+          <button class="add-btn" onclick="addCourse(${li},${si},true)">+ Add Future Course</button>
+        </div>`;
+      block.appendChild(semDiv);
+      const tbody=document.getElementById(`tb-${li}-${si}`);
+      sem.courses.forEach((_,ci)=>tbody.appendChild(makeRow(li,si,ci)));
+      refreshSumRow(li,si);
+    });
     container.appendChild(block);
-    const tbody = document.getElementById(`tbody-${si}`);
-    sem.courses.forEach((c,ci) => tbody.appendChild(makeRow(si,ci,c)));
-    refreshSumRow(si);
   });
 }
 
-function makeRow(si, ci, c) {
-  const score = calcScore(c.ca, c.exam);
-  const grade = scoreToGrade(score);
-  const wa = weightedAvg(score, parseFloat(c.crHrs)||0);
-  const tr = document.createElement('tr');
-  tr.id = `tr-${si}-${ci}`;
-  const scoreHtml = score==='' ? '<span class="gDash">—</span>' : parseFloat(score).toFixed(1);
-  const gradeHtml = grade!=='—' ? `<span class="badge g${grade}">${grade}</span>` : '<span class="gDash">—</span>';
-  tr.innerHTML = `
-    <td><input class="course-name-input" type="text" value="${c.name}" placeholder="Course name / code"
-      onchange="semesters[${si}].courses[${ci}].name=this.value"/></td>
-    <td class="num"><input class="num-input" type="number" min="0" max="40" step="0.1" value="${c.ca}" placeholder="—"
-      oninput="onUpdate(${si},${ci},'ca',this.value)"/></td>
-    <td class="num"><input class="num-input" type="number" min="0" max="60" step="0.1" value="${c.exam}" placeholder="—"
-      oninput="onUpdate(${si},${ci},'exam',this.value)"/></td>
-    <td class="num computed" id="sc-${si}-${ci}">${scoreHtml}</td>
-    <td class="num"><select class="cr-select" onchange="onUpdate(${si},${ci},'crHrs',this.value)">
-      ${[0,1,2,3,4,5,6].map(v=>`<option value="${v}"${v==c.crHrs?' selected':''}>${v}</option>`).join('')}
+function makeRow(li,si,ci) {
+  const c=levels[li].semesters[si].courses[ci];
+  const score=c.future?'':calcScore(c.ca,c.exam);
+  const grade=c.future?'—':toGrade(score);
+  const wa=c.future?'—':(score===''?'—':(waVal(score,parseInt(c.crHrs)||0)??'—'));
+  const waStr=wa==='—'?'—':parseFloat(wa).toFixed(1);
+  const grHtml=grade!=='—'?`<span class="badge g${grade}">${grade}</span>`:'<span class="gDash">—</span>';
+  const scoreHtml=score===''?'<span class="gDash">—</span>':parseFloat(score).toFixed(1);
+  const tr=document.createElement('tr');
+  if(c.future)tr.className='future-row';
+  tr.id=`row-${li}-${si}-${ci}`;
+  tr.innerHTML=`
+    <td><input class="course-input" type="text" value="${c.name}" placeholder="${c.future?'Future course name':'Course name / code'}"
+      onchange="levels[${li}].semesters[${si}].courses[${ci}].name=this.value;save()"/></td>
+    <td class="num">${c.future?'<span class="gDash">—</span>':`<input class="num-input" type="number" min="0" max="40" step="0.1" value="${c.ca}" placeholder="—"
+      oninput="onUp(${li},${si},${ci},'ca',this.value)"/>`}</td>
+    <td class="num">${c.future?'<span class="gDash">—</span>':`<input class="num-input" type="number" min="0" max="60" step="0.1" value="${c.exam}" placeholder="—"
+      oninput="onUp(${li},${si},${ci},'exam',this.value)"/>`}</td>
+    <td class="num computed" id="sc-${li}-${si}-${ci}">${scoreHtml}</td>
+    <td class="num"><select class="cr-sel" onchange="onUp(${li},${si},${ci},'crHrs',this.value)">
+      ${[0,1,2,3,4,5,6].map(v=>`<option${v==c.crHrs?' selected':''}>${v}</option>`).join('')}
     </select></td>
-    <td class="num" id="gr-${si}-${ci}">${gradeHtml}</td>
-    <td class="num computed" id="wa-${si}-${ci}">${wa}</td>
-    <td><button class="row-del" onclick="delCourse(${si},${ci})">×</button></td>`;
+    <td class="num" id="gr-${li}-${si}-${ci}">${grHtml}</td>
+    <td class="num computed" id="wa-${li}-${si}-${ci}">${waStr}</td>
+    <td class="num">
+      ${c.future?`<span class="future-badge">Future</span>`:
+        c.resit?`<span class="resit-badge">Resit</span><button style="font-size:10px;margin-left:3px;background:none;border:none;color:#9a3412;cursor:pointer" onclick="toggleResit(${li},${si},${ci})">×</button>`:
+        `<button style="font-size:10px;background:none;border:1px solid #e0e4ed;border-radius:4px;padding:1px 5px;color:#6b7280;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="toggleResit(${li},${si},${ci})">Resit</button>`}
+    </td>
+    <td><button class="row-del" onclick="delCourse(${li},${si},${ci})">×</button></td>`;
   return tr;
 }
 
-function onUpdate(si, ci, field, val) {
-  semesters[si].courses[ci][field] = val;
-  const c = semesters[si].courses[ci];
-  const score = calcScore(c.ca, c.exam);
-  const grade = scoreToGrade(score);
-  const wa = weightedAvg(score, parseFloat(c.crHrs)||0);
-  const scEl=document.getElementById(`sc-${si}-${ci}`);
-  const grEl=document.getElementById(`gr-${si}-${ci}`);
-  const waEl=document.getElementById(`wa-${si}-${ci}`);
-  if(scEl) scEl.innerHTML = score===''?'<span class="gDash">—</span>':parseFloat(score).toFixed(1);
-  if(grEl) grEl.innerHTML = grade!=='—'?`<span class="badge g${grade}">${grade}</span>`:'<span class="gDash">—</span>';
-  if(waEl) waEl.textContent = wa;
-  refreshSumRow(si);
+function onUp(li,si,ci,field,val) {
+  levels[li].semesters[si].courses[ci][field]=val;
+  const c=levels[li].semesters[si].courses[ci];
+  const score=calcScore(c.ca,c.exam);
+  const grade=toGrade(score);
+  const wa=waVal(score,parseInt(c.crHrs)||0);
+  const scEl=document.getElementById(`sc-${li}-${si}-${ci}`);
+  const grEl=document.getElementById(`gr-${li}-${si}-${ci}`);
+  const waEl=document.getElementById(`wa-${li}-${si}-${ci}`);
+  if(scEl) scEl.innerHTML=score===''?'<span class="gDash">—</span>':parseFloat(score).toFixed(1);
+  if(grEl) grEl.innerHTML=grade!=='—'?`<span class="badge g${grade}">${grade}</span>`:'<span class="gDash">—</span>';
+  if(waEl) waEl.textContent=wa===null?'—':parseFloat(wa).toFixed(1);
+  refreshSumRow(li,si);
+  save();
 }
 
-function refreshSumRow(si) {
-  const el = document.getElementById(`semSum-${si}`);
-  if (!el) return;
-  const s = semesterSummary(si);
-  const label = mode==='CWA'?'SWA':'Sem GPA';
-  const suffix = mode==='CWA'?'%':' / 4.0';
-  const grBadge = s.grade!=='—'?`<span class="badge g${s.grade}" style="margin-left:4px">${s.grade}</span>`:'';
-  el.cells[0].innerHTML = `<span class="hi">${semesters[si].name} ${label}: ${s.val}${suffix} &nbsp;|&nbsp; Cumulative Grade: ${grBadge}</span>`;
+function refreshSumRow(li,si) {
+  const el=document.getElementById(`sum-${li}-${si}`);
+  if(!el) return;
+  const ss=semStats(levels[li].semesters[si]);
+  const sfx=mode==='CWA'?'%':'/4.0';
+  const grBadge=ss.grade!=='—'?`<span class="badge g${ss.grade}" style="margin-left:4px">${ss.grade}</span>`:'';
+  el.cells[0].innerHTML=`<span class="hi">${levels[li].semesters[si].name} SWA: ${ss.val}${sfx} &nbsp;|&nbsp; Grade: ${grBadge}</span>`;
 }
 
-function addSemester() {
-  semesters.push({name:`Semester ${semesters.length+1}`, courses:blankCourses()});
-  renderAll();
+function setStatus(li,s) {
+  levels[li].status=s; save(); renderGrades();
 }
-function deleteSemester(si) {
-  if (semesters.length===1) return;
-  semesters.splice(si,1); renderAll();
+function addCourse(li,si,future) {
+  levels[li].semesters[si].courses.push({name:'',ca:'',exam:'',crHrs:3,future,resit:false});
+  save(); renderGrades();
 }
-function addCourse(si) {
-  semesters[si].courses.push({name:'',ca:'',exam:'',crHrs:3}); renderAll();
+function delCourse(li,si,ci) {
+  levels[li].semesters[si].courses.splice(ci,1); save(); renderGrades();
 }
-function delCourse(si,ci) {
-  semesters[si].courses.splice(ci,1); renderAll();
-}
-function blankCourses() {
-  return [{name:'',ca:'',exam:'',crHrs:3},{name:'',ca:'',exam:'',crHrs:3},{name:'',ca:'',exam:'',crHrs:3}];
+function toggleResit(li,si,ci) {
+  levels[li].semesters[si].courses[ci].resit=!levels[li].semesters[si].courses[ci].resit;
+  save(); renderGrades();
 }
 
-// ── TABS ──────────────────────────────────────────────────────────
-function showTab(t) {
-  document.getElementById('tabEntry').style.display = t==='entry'?'block':'none';
-  document.getElementById('tabSummary').style.display = t==='summary'?'block':'none';
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='entry')||(i===1&&t==='summary')));
-  if (t==='summary') renderSummary();
-}
-
-// ── SUMMARY TAB ───────────────────────────────────────────────────
+// ─── SUMMARY TAB ─────────────────────────────────────────────────────────────
 function renderSummary() {
-  const ov = overallSummary();
-  const sc = ov.scores;
-  const avg = sc.length?(sc.reduce((a,b)=>a+b,0)/sc.length).toFixed(1):'—';
-  const hi = sc.length?Math.max(...sc).toFixed(1):'—';
-  const lo = sc.length?Math.min(...sc).toFixed(1):'—';
-  const label = mode==='CWA'?'CWA':'GPA';
-  const suffix = mode==='CWA'?'%':' / 4.0';
-  const grBadge = ov.grade!=='—'?`<span class="badge g${ov.grade}">${ov.grade}</span>`:'—';
+  const ov=overallStats();
+  const dc=degreeClass(ov.val);
+  const sfx=mode==='CWA'?'%':'/4.0';
+  const compSems=levels.flatMap(lv=>lv.semesters).filter(s=>s.courses.some(c=>!c.future&&c.ca!==''&&c.exam!==''));
+  const totalSems=levels.length*2;
+  const remSems=totalSems-compSems.length;
+  const avg=ov.scores.length?(ov.scores.reduce((a,b)=>a+b,0)/ov.scores.length).toFixed(1):'—';
+  const hi=ov.scores.length?Math.max(...ov.scores).toFixed(1):'—';
+  const lo=ov.scores.length?Math.min(...ov.scores).toFixed(1):'—';
 
-  document.getElementById('metricsGrid').innerHTML = `
-    <div class="metric-card highlight">
-      <div class="m-label">Overall ${label}</div>
-      <div class="m-val">${ov.val}</div>
-      <div class="m-sub">${suffix} &nbsp; ${grBadge}</div>
+  document.getElementById('dashGrid').innerHTML=`
+    <div class="dash-card blue"><div class="dc-label">Overall ${mode}</div><div class="dc-val">${ov.val}${sfx}</div><div class="dc-sub">${dc?dc.label:'No data'}</div></div>
+    <div class="dash-card"><div class="dc-label">Credit Hours Done</div><div class="dc-val">${ov.cr}</div><div class="dc-sub">+ ${ov.futCr} future hrs</div></div>
+    <div class="dash-card"><div class="dc-label">Avg Score</div><div class="dc-val">${avg}%</div><div class="dc-sub">All courses</div></div>
+    <div class="dash-card"><div class="dc-label">Highest Score</div><div class="dc-val">${hi}%</div><div class="dc-sub">Best course</div></div>
+    <div class="dash-card"><div class="dc-label">Lowest Score</div><div class="dc-val">${lo}%</div><div class="dc-sub">Needs attention</div></div>
+    <div class="dash-card"><div class="dc-label">Semesters Left</div><div class="dc-val">${remSems}</div><div class="dc-sub">of ${totalSems} total</div></div>`;
+
+  const pct=Math.round((compSems.length/totalSems)*100);
+  document.getElementById('classBanner').innerHTML = dc ? `
+    <div class="class-banner ${dc.cls}">
+      <div><div class="cb-title">${dc.label}</div><div class="cb-sub">Current degree classification</div></div>
+      <div class="cb-cwa">${ov.val}${sfx}</div>
     </div>
-    <div class="metric-card">
-      <div class="m-label">Total Credit Hrs</div>
-      <div class="m-val">${ov.cr}</div>
-      <div class="m-sub">All semesters</div>
-    </div>
-    <div class="metric-card">
-      <div class="m-label">Avg Score</div>
-      <div class="m-val">${avg}%</div>
-      <div class="m-sub">All courses</div>
-    </div>
-    <div class="metric-card">
-      <div class="m-label">Highest Score</div>
-      <div class="m-val">${hi}%</div>
-      <div class="m-sub">Best course</div>
-    </div>
-    <div class="metric-card">
-      <div class="m-label">Lowest Score</div>
-      <div class="m-val">${lo}%</div>
-      <div class="m-sub">Needs attention</div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Degree progress</span><span>${compSems.length} of ${totalSems} semesters completed</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>` :
+    `<div class="progress-wrap">
+      <div class="progress-label"><span>Degree progress</span><span>${compSems.length} of ${totalSems} semesters with data</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
     </div>`;
 
-  const colH = mode==='CWA'?'Weighted Avg.':'GP × Cr';
-  const semLabel = mode==='CWA'?'SWA':'Sem GPA';
-  const sfx = mode==='CWA'?'%':' / 4.0';
-  let html='';
-  semesters.forEach((sem,si)=>{
-    const ss = semesterSummary(si);
-    const grBadge2 = ss.grade!=='—'?`<span class="badge g${ss.grade}">${ss.grade}</span>`:'';
-    html+=`<div class="summary-section">
-      <div class="summary-section-title">${sem.name}</div>
-      <table><thead><tr>
-        <th style="width:36%">Course Name / Course Code</th>
-        <th class="num">CA</th><th class="num">Exam</th><th class="num">Score</th>
-        <th class="num">Cr. Hrs.</th><th class="num">Grade</th><th class="num">${colH}</th>
-      </tr></thead><tbody>`;
-    sem.courses.forEach(c=>{
-      if(c.ca===''&&c.exam==='') return;
-      const s=calcScore(c.ca,c.exam);
-      const g=scoreToGrade(s);
-      const wa=weightedAvg(s,parseFloat(c.crHrs)||0);
-      const bh=g!=='—'?`<span class="badge g${g}">${g}</span>`:'<span class="gDash">—</span>';
-      html+=`<tr>
-        <td>${c.name||'<span style="color:#c0c8d8">Unnamed course</span>'}</td>
-        <td class="num computed">${c.ca||'—'}</td>
-        <td class="num computed">${c.exam||'—'}</td>
-        <td class="num computed">${s!==''?parseFloat(s).toFixed(1):'—'}</td>
-        <td class="num computed">${c.crHrs}</td>
-        <td class="num">${bh}</td>
-        <td class="num computed">${wa}</td>
-      </tr>`;
-    });
-    html+=`</tbody><tfoot><tr class="summary-row">
-      <td colspan="7"><span class="hi">${sem.name} ${semLabel}: ${ss.val}${sfx} &nbsp;|&nbsp; Cumulative Grade: ${grBadge2}</span></td>
-    </tr></tfoot></table></div>`;
-  });
-  document.getElementById('summaryContent').innerHTML = html +
-    `<div class="level-footer">Overall ${label} upto Level: <span>${ov.val}${sfx}</span></div>`;
+  renderChart(ov);
+  renderSummaryLevels();
 }
 
-// ── PREDICTION ────────────────────────────────────────────────────
+function renderChart(ov) {
+  const chartDiv=document.getElementById('cwaChart');
+  chartDiv.innerHTML='';
+  const sfx=mode==='CWA'?'%':'/4.0';
+  let allBars=[];
+  levels.forEach((lv,li)=>{
+    lv.semesters.forEach((sem,si)=>{
+      const ss=semStats(sem);
+      const hasFuture=sem.courses.some(c=>c.future);
+      const hasData=sem.courses.some(c=>!c.future&&c.ca!==''&&c.exam!=='');
+      allBars.push({label:`L${li+1}S${si+1}`,val:ss.val,future:hasFuture&&!hasData,hasData});
+    });
+  });
+  const maxVal=mode==='CWA'?100:4;
+  const note=ov.val!=='—'?`Current ${mode}: ${ov.val}${sfx}`:'';
+  document.getElementById('chartNote').textContent=note;
+  allBars.forEach(bar=>{
+    const wrap=document.createElement('div');
+    wrap.className='cwa-bar-wrap';
+    if(bar.hasData&&bar.val!=='—') {
+      const pct=Math.round((parseFloat(bar.val)/maxVal)*100);
+      const barEl=document.createElement('div');
+      barEl.className='cwa-bar '+(bar.future?'bar-proj':'bar-done');
+      barEl.style.height=pct+'%';
+      barEl.setAttribute('data-tip',`${bar.val}${sfx}`);
+      const valEl=document.createElement('div');
+      valEl.className='cwa-bar-val';
+      valEl.textContent=bar.val;
+      const lblEl=document.createElement('div');
+      lblEl.className='cwa-bar-lbl';
+      lblEl.textContent=bar.label;
+      wrap.appendChild(barEl);
+      wrap.appendChild(valEl);
+      wrap.appendChild(lblEl);
+    } else {
+      const barEl=document.createElement('div');
+      barEl.className='cwa-bar bar-proj';
+      barEl.style.height='10%';
+      barEl.setAttribute('data-tip','No data');
+      const lblEl=document.createElement('div');
+      lblEl.className='cwa-bar-lbl';
+      lblEl.textContent=bar.label;
+      wrap.appendChild(barEl);
+      wrap.appendChild(lblEl);
+    }
+    chartDiv.appendChild(wrap);
+  });
+}
+
+function renderSummaryLevels() {
+  const colH=mode==='CWA'?'Weighted Avg.':'GP × Cr';
+  const sfx=mode==='CWA'?'%':'/4.0';
+  let html='';
+  levels.forEach((lv,li)=>{
+    const ls=levelStats(lv);
+    html+=`<div class="level-block" style="margin-bottom:14px">
+      <div class="level-header">
+        <h3>${lv.name}</h3>
+        <div class="level-cwa">${ls.val!=='—'?`Level CWA: ${ls.val}${sfx}`:''}</div>
+      </div>`;
+    lv.semesters.forEach(sem=>{
+      const ss=semStats(sem);
+      const grBadge=ss.grade!=='—'?`<span class="badge g${ss.grade}">${ss.grade}</span>`:'';
+      html+=`<div class="sem-block">
+        <div class="sem-title-bar">
+          <span class="sem-title">${sem.name}</span>
+          <span class="sem-swa">${ss.val!=='—'?`SWA: ${ss.val}${sfx} · Grade: `:''} ${grBadge}</span>
+        </div>
+        <table><thead><tr>
+          <th style="width:34%">Course Name / Code</th>
+          <th class="num">CA</th><th class="num">Exam</th><th class="num">Score</th>
+          <th class="num">Cr. Hrs</th><th class="num">Grade</th><th class="num">${colH}</th>
+        </tr></thead><tbody>`;
+      sem.courses.forEach(c=>{
+        if(c.ca===''&&c.exam===''&&!c.future) return;
+        const score=c.future?'':calcScore(c.ca,c.exam);
+        const grade=toGrade(score);
+        const wa=score===''?null:waVal(score,parseInt(c.crHrs)||0);
+        const bh=grade!=='—'?`<span class="badge g${grade}">${grade}</span>`:'<span class="gDash">—</span>';
+        html+=`<tr${c.future?' class="future-row"':''}>
+          <td>${c.name||'<span style="color:#c0c8d8">Unnamed</span>'}${c.future?' <span class="future-badge">Future</span>':''}${c.resit?' <span class="resit-badge">Resit</span>':''}</td>
+          <td class="num computed">${c.ca||'—'}</td>
+          <td class="num computed">${c.exam||'—'}</td>
+          <td class="num computed">${score!==''?parseFloat(score).toFixed(1):'—'}</td>
+          <td class="num computed">${c.crHrs}</td>
+          <td class="num">${bh}</td>
+          <td class="num computed">${wa!==null?parseFloat(wa).toFixed(1):'—'}</td>
+        </tr>`;
+      });
+      html+=`</tbody><tfoot><tr class="sum-row">
+        <td colspan="7"><span class="hi">${sem.name} SWA: ${ss.val}${sfx} &nbsp;|&nbsp; Cumulative Grade: ${ss.grade!=='—'?`<span class="badge g${ss.grade}">${ss.grade}</span>`:''}</span></td>
+      </tr></tfoot></table></div>`;
+    });
+    html+=`<div style="text-align:right;padding:8px 16px;font-size:12px;font-weight:600;color:#374151;background:#f8f9fc;border-top:1px solid #d9dee8">
+      Level ${li+1} CWA: <span style="color:#1a56db">${ls.val}${sfx}</span></div></div>`;
+  });
+  const ov=overallStats();
+  html+=`<div style="text-align:right;padding:10px 16px;font-size:13px;font-weight:600;color:#374151;background:#fff;border:1px solid #d9dee8;border-radius:10px;margin-top:4px">
+    Overall CWA up to date: <span style="color:#1a56db">${ov.val}${mode==='CWA'?'%':'/4.0'}</span></div>`;
+  document.getElementById('summaryLevels').innerHTML=html;
+}
+
+// ─── TARGET TAB ──────────────────────────────────────────────────────────────
+function renderTarget() {
+  const ov=overallStats();
+  const sfx=mode==='CWA'?'%':'/4.0';
+  const maxPossible=mode==='CWA'?100:4;
+
+  // Count completed and future credit hours
+  let doneCr=0,futureCr=0,donePoints=0;
+  levels.forEach(lv=>lv.semesters.forEach(sem=>sem.courses.forEach(c=>{
+    const h=parseInt(c.crHrs)||0;
+    if(c.future){futureCr+=h;return;}
+    if(h===0||c.ca===''&&c.exam==='') return;
+    const s=calcScore(c.ca,c.exam); if(s==='') return;
+    const g=toGrade(s);
+    let egp=GP[g]; if(c.resit&&egp>GP['D']) egp=GP['D'];
+    donePoints+=mode==='CWA'?egp*h*20:egp*h;
+    doneCr+=h;
+  })));
+
+  // Also count in-progress (blank) courses as future
+  levels.forEach(lv=>lv.semesters.forEach(sem=>sem.courses.forEach(c=>{
+    const h=parseInt(c.crHrs)||0;
+    if(!c.future&&h>0&&c.ca===''&&c.exam==='') futureCr+=h;
+  })));
+
+  const totalCr=doneCr+futureCr;
+  const currentCWA=doneCr>0?donePoints/doneCr:0;
+
+  const dc=degreeClass(ov.val);
+  document.getElementById('targetDash').innerHTML=`
+    <div class="dash-grid" style="margin-bottom:0">
+      <div class="dash-card blue"><div class="dc-label">Current ${mode}</div><div class="dc-val">${ov.val}${sfx}</div><div class="dc-sub">${dc?dc.label:'No data yet'}</div></div>
+      <div class="dash-card"><div class="dc-label">Credit hrs done</div><div class="dc-val">${doneCr}</div><div class="dc-sub">of ${totalCr} total</div></div>
+      <div class="dash-card"><div class="dc-label">Credit hrs left</div><div class="dc-val">${futureCr}</div><div class="dc-sub">to be completed</div></div>
+    </div>`;
+
+  let cardsHtml='<div class="target-grid">';
+  DEGREE_CLASSES.forEach(d=>{
+    const targetCWA=mode==='CWA'?d.min:(d.min/25); // convert % to GPA approx
+    if(doneCr===0){
+      cardsHtml+=`<div class="target-card tc-${d.cls}">
+        <div class="tc-class">${d.label} (≥${d.min}${sfx})</div>
+        <div class="tc-impossible">Enter grades to calculate</div></div>`;
+      return;
+    }
+    const needed=(targetCWA*totalCr - currentCWA*doneCr)/Math.max(futureCr,1);
+    const neededPct=mode==='CWA'?needed:needed*25;
+
+    const alreadyAchieved=parseFloat(ov.val)>=(mode==='CWA'?d.min:d.min/25) && futureCr===0;
+    if(alreadyAchieved){
+      cardsHtml+=`<div class="target-card tc-achieved">
+        <div class="tc-class">${d.label}</div>
+        <div class="tc-need">✓ Achieved</div>
+        <div class="tc-detail">Current ${mode} already qualifies</div></div>`;
+      return;
+    }
+    if(neededPct>100){
+      cardsHtml+=`<div class="target-card tc-${d.cls}" style="opacity:0.6">
+        <div class="tc-class">${d.label} (≥${d.min}${sfx})</div>
+        <div class="tc-impossible">No longer possible</div>
+        <div class="tc-detail">Even 100% in all remaining courses is not enough</div></div>`;
+      return;
+    }
+    if(neededPct<=0){
+      cardsHtml+=`<div class="target-card tc-achieved">
+        <div class="tc-class">${d.label}</div>
+        <div class="tc-need">✓ Secured</div>
+        <div class="tc-detail">Even scoring 0% in remaining courses keeps this class</div></div>`;
+      return;
+    }
+    // Split into CA and exam proportionally (40% CA, 60% Exam)
+    const neededCA=Math.min(40,neededPct*0.4).toFixed(1);
+    const neededExam=Math.min(60,(neededPct-neededCA*1)).toFixed(1);
+    cardsHtml+=`<div class="target-card tc-${d.cls}">
+      <div class="tc-class">${d.label} (≥${d.min}${sfx})</div>
+      <div class="tc-need">${neededPct.toFixed(1)}%</div>
+      <div class="tc-detail">avg score needed in remaining ${futureCr} credit hrs</div>
+      <div class="tc-detail" style="margin-top:4px">≈ ${neededCA}/40 CA + ${neededExam}/60 Exam per course</div>
+    </div>`;
+  });
+  cardsHtml+='</div>';
+  document.getElementById('targetCards').innerHTML=cardsHtml;
+
+  // What-if
+  document.getElementById('wiCr').value=futureCr;
+  runWhatif();
+}
+
+function runWhatif() {
+  const ov=overallStats();
+  const wiScore=parseFloat(document.getElementById('wiScore').value)||0;
+  const wiCr=parseFloat(document.getElementById('wiCr').value)||0;
+  const sfx=mode==='CWA'?'%':'/4.0';
+
+  let doneCr=0,donePoints=0;
+  levels.forEach(lv=>lv.semesters.forEach(sem=>sem.courses.forEach(c=>{
+    const h=parseInt(c.crHrs)||0;
+    if(c.future||h===0||c.ca===''&&c.exam==='') return;
+    const s=calcScore(c.ca,c.exam); if(s==='') return;
+    const g=toGrade(s);
+    let egp=GP[g]; if(c.resit&&egp>GP['D']) egp=GP['D'];
+    donePoints+=mode==='CWA'?egp*h*20:egp*h;
+    doneCr+=h;
+  })));
+
+  const futGrade=toGrade(wiScore);
+  const futGP=GP[futGrade]==='undefined'?0:GP[futGrade]||0;
+  const futPoints=mode==='CWA'?futGP*wiCr*20:futGP*wiCr;
+  const totalCr=doneCr+wiCr;
+  if(totalCr===0){document.getElementById('wiResult').innerHTML='No data.';return;}
+  const projCWA=((donePoints+futPoints)/totalCr).toFixed(2);
+  const projDC=degreeClass(projCWA);
+  const projGrade=mode==='CWA'?toGrade(parseFloat(projCWA)):gpToGrade(parseFloat(projCWA));
+  document.getElementById('wiResult').innerHTML=`
+    If you average <strong>${wiScore}%</strong> (Grade ${futGrade}) across ${wiCr} remaining credit hours,<br>
+    your final ${mode} would be <strong>${projCWA}${sfx}</strong> — <strong>${projDC?projDC.label:'Below third class'}</strong>`;
+}
+
+// ─── AI PREDICTION ───────────────────────────────────────────────────────────
 async function runPrediction() {
-  const btn=document.getElementById('predictBtn');
+  const btn=document.getElementById('predBtn');
   btn.classList.add('loading');
-  document.getElementById('btnIcon').innerHTML='<div class="spinner"></div>';
-  document.getElementById('btnText').textContent='Analysing…';
+  document.getElementById('predIcon').innerHTML='<div class="spinner"></div>';
+  document.getElementById('predText').textContent='Analysing…';
 
-  const ov = overallSummary();
-  const allC = semesters.flatMap(s=>s.courses).filter(c=>c.ca!==''&&c.exam!=='');
-  const avgSc = ov.scores.length ? ov.scores.reduce((a,b)=>a+b,0)/ov.scores.length : 50;
-  const fails = ov.scores.filter(s=>s<50).length;
-  const g1 = allC.length>=1 ? Math.min(20,(calcScore(allC[0].ca,allC[0].exam)||0)*0.2) : 10;
-  const g2 = allC.length>=2 ? Math.min(20,(calcScore(allC[1].ca,allC[1].exam)||0)*0.2) : 10;
+  const ov=overallStats();
+  const allC=levels.flatMap(lv=>lv.semesters.flatMap(s=>s.courses)).filter(c=>!c.future&&c.ca!==''&&c.exam!=='');
+  const avgSc=ov.scores.length?ov.scores.reduce((a,b)=>a+b,0)/ov.scores.length:50;
+  const fails=ov.scores.filter(s=>s<50).length;
+  const g1=allC.length>=1?Math.min(20,(calcScore(allC[0].ca,allC[0].exam)||0)*0.2):10;
+  const g2=allC.length>=2?Math.min(20,(calcScore(allC[1].ca,allC[1].exam)||0)*0.2):10;
 
-  const payload = {
-    age:19, studyTime:Math.min(4,Math.max(1,Math.round(avgSc/25))),
-    failures:fails, absences:4,
-    g1:parseFloat(g1.toFixed(1)), g2:parseFloat(g2.toFixed(1)),
-    travelTime:1, freeTime:3, goOut:3, health:4,
-    internet:1, paid:0, activities:1, nursery:1,
-    higher:1, romantic:0, famrel:4, schoolsup:0, famsup:1
+  const payload={
+    age:19,studyTime:Math.min(4,Math.max(1,Math.round(avgSc/25))),
+    failures:Math.min(3,fails),absences:4,
+    g1:parseFloat(g1.toFixed(1)),g2:parseFloat(g2.toFixed(1)),
+    travelTime:1,freeTime:3,goOut:3,health:4,
+    internet:1,paid:0,activities:1,nursery:1,
+    higher:1,romantic:0,famrel:4,schoolsup:0,famsup:1
   };
 
   try {
-    const res = await fetch('/api/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    const data = await res.json();
-    data.error ? showPredictError(data.error) : showPredictResult(data);
+    const res=await fetch('/api/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data=await res.json();
+    data.error?showPredErr(data.error):showPredResult(data);
   } catch(e) {
-    showPredictError('Cannot connect to server. Make sure the backend is running (python setup.py).');
+    showPredErr('Cannot connect to server. Make sure the backend is running.');
   }
-
   btn.classList.remove('loading');
-  document.getElementById('btnIcon').textContent='✦';
-  document.getElementById('btnText').textContent='Predict My Grade';
+  document.getElementById('predIcon').textContent='✦';
+  document.getElementById('predText').textContent='Predict My Grade';
 }
 
-function showPredictResult(d) {
-  const el=document.getElementById('predictResult');
-  el.style.display='block';
+function showPredResult(d) {
   const probs=d.probabilities||{};
   const grades=['A','B','C','D','F'];
   const bars=grades.map(g=>`
     <div class="prob-row">
-      <span class="prob-label">${g}</span>
+      <span class="prob-lbl">${g}</span>
       <div class="prob-track"><div class="prob-fill f${g}" id="pf${g}" style="width:0%"></div></div>
       <span class="prob-pct">${(probs[g]||0).toFixed(1)}%</span>
     </div>`).join('');
-  const recs=(d.recommendations||[]).map(r=>`<div class="rec"><span class="rec-icon">${r.icon}</span><span>${r.text}</span></div>`).join('');
-  el.innerHTML=`
-    <div style="display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap">
-      <div>
-        <div class="predict-grade">${d.grade}</div>
-        <div class="predict-meta">Predicted Final Grade &nbsp;·&nbsp; ${d.confidence}% confidence</div>
-        <span class="risk-chip risk-${d.risk}">${d.risk==='Low'?'✅':d.risk==='Medium'?'⚠️':'🔴'} ${d.risk} Risk</span>
+  const recs=(d.recommendations||[]).map(r=>`<div class="rec"><span style="font-size:15px">${r.icon}</span><span>${r.text}</span></div>`).join('');
+  document.getElementById('predResult').innerHTML=`
+    <div class="pred-result">
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+        <div>
+          <div class="pred-grade">${d.grade}</div>
+          <div class="pred-meta">Predicted final grade · ${d.confidence}% confidence</div>
+          <span class="risk-chip r${d.risk}">${d.risk==='Low'?'✅':d.risk==='Medium'?'⚠️':'🔴'} ${d.risk} Risk</span>
+        </div>
+        <div style="flex:1;min-width:180px">
+          <div class="slbl" style="margin-top:0">Grade probabilities</div>${bars}
+        </div>
       </div>
-      <div style="flex:1;min-width:200px">
-        <div class="sub-label" style="margin-top:0">Grade Probabilities</div>
-        ${bars}
-      </div>
-    </div>
-    ${recs?`<div style="margin-top:14px"><div class="sub-label">Recommendations</div>${recs}</div>`:''}`;
+      ${recs?`<div class="slbl">Recommendations</div>${recs}`:''}
+    </div>`;
   setTimeout(()=>grades.forEach(g=>{const e=document.getElementById('pf'+g);if(e)e.style.width=(probs[g]||0)+'%';}),100);
 }
 
-function showPredictError(msg) {
-  const el=document.getElementById('predictResult');
-  el.style.display='block';
-  el.innerHTML=`<div class="error-box">⚠️ ${msg}</div>`;
+function showPredErr(msg) {
+  document.getElementById('predResult').innerHTML=`<div class="err-box">⚠️ ${msg}</div>`;
 }
 
+// ─── EXPORT CSV ──────────────────────────────────────────────────────────────
+function exportCSV() {
+  let rows=[['Level','Semester','Course','CA','Exam','Score','Credit Hrs','Grade','Weighted Avg','Type']];
+  levels.forEach(lv=>lv.semesters.forEach(sem=>sem.courses.forEach(c=>{
+    const score=c.future?'':calcScore(c.ca,c.exam);
+    const grade=c.future?'Future':toGrade(score);
+    const wa=score===''?'':waVal(score,parseInt(c.crHrs)||0);
+    rows.push([lv.name,sem.name,c.name,c.ca,c.exam,score===''?'':parseFloat(score).toFixed(1),c.crHrs,grade,wa===null?'':parseFloat(wa).toFixed(1),c.future?'Future':c.resit?'Resit':'Normal']);
+  })));
+  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='edupredict_transcript.csv';
+  a.click();
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
 async function loadStats() {
   try {
-    const res=await fetch('/api/stats');
-    const d=await res.json();
+    const d=await(await fetch('/api/stats')).json();
     document.getElementById('hAcc').textContent=d.accuracy!=='N/A'?(d.accuracy*100).toFixed(1)+'%':'—';
-    document.getElementById('hSamples').textContent=d.samples!=='N/A'?(+d.samples).toLocaleString():'—';
   } catch(e){}
 }
 
-// ── INIT ──────────────────────────────────────────────────────────
-semesters = [
-  {name:'Semester 1 (Sem 3)', courses:[
-    {name:'Object Oriented Programming with C++',ca:'32.9',exam:'55.3',crHrs:3},
-    {name:'Fundamentals of Logic Design',ca:'39.2',exam:'59',crHrs:3},
-    {name:'Introduction to Operations Research',ca:'35.8',exam:'56',crHrs:3},
-    {name:'Database Systems',ca:'33',exam:'48',crHrs:3},
-    {name:'Analytic Geometry and Calculus II (with MATLAB)',ca:'37.3',exam:'51',crHrs:3},
-    {name:'Leadership Seminar I',ca:'22',exam:'55',crHrs:0},
-    {name:'Fundamentals of Innovation and Entrepreneurship I',ca:'27.5',exam:'47.65',crHrs:2},
-  ]},
-  {name:'Semester 2 (Sem 4)', courses:[
-    {name:'Fundamentals of Innovation and Entrepreneurship II',ca:'30.3',exam:'41.5',crHrs:2},
-    {name:'Computer Architecture and Organisation',ca:'32',exam:'49',crHrs:3},
-    {name:'African Studies',ca:'36',exam:'46',crHrs:2},
-    {name:'Programming with Java',ca:'39',exam:'53.5',crHrs:3},
-    {name:'Probability, Statistics and Reliability (with MATLAB)',ca:'38',exam:'52',crHrs:3},
-    {name:'Applied Linear Algebra (with MATLAB)',ca:'36.1',exam:'49.2',crHrs:3},
-    {name:'Data Structures and Algorithms',ca:'38',exam:'53',crHrs:3},
-  ]},
-];
+// Pre-fill demo data if storage is empty
+if(!localStorage.getItem('edupredict_v2')) {
+  levels[0].status='complete';
+  levels[0].semesters[0].courses=[
+    {name:'Object Oriented Programming with C++',ca:'32.9',exam:'55.3',crHrs:3,future:false,resit:false},
+    {name:'Fundamentals of Logic Design',ca:'39.2',exam:'59',crHrs:3,future:false,resit:false},
+    {name:'Introduction to Operations Research',ca:'35.8',exam:'56',crHrs:3,future:false,resit:false},
+    {name:'Database Systems',ca:'33',exam:'48',crHrs:3,future:false,resit:false},
+    {name:'Analytic Geometry and Calculus II',ca:'37.3',exam:'51',crHrs:3,future:false,resit:false},
+    {name:'Leadership Seminar I',ca:'22',exam:'55',crHrs:0,future:false,resit:false},
+    {name:'Fundamentals of Innovation I',ca:'27.5',exam:'47.65',crHrs:2,future:false,resit:false},
+  ];
+  levels[0].semesters[1].courses=[
+    {name:'Fundamentals of Innovation II',ca:'30.3',exam:'41.5',crHrs:2,future:false,resit:false},
+    {name:'Computer Architecture and Organisation',ca:'32',exam:'49',crHrs:3,future:false,resit:false},
+    {name:'African Studies',ca:'36',exam:'46',crHrs:2,future:false,resit:false},
+    {name:'Programming with Java',ca:'39',exam:'53.5',crHrs:3,future:false,resit:false},
+    {name:'Probability, Statistics and Reliability',ca:'38',exam:'52',crHrs:3,future:false,resit:false},
+    {name:'Applied Linear Algebra',ca:'36.1',exam:'49.2',crHrs:3,future:false,resit:false},
+    {name:'Data Structures and Algorithms',ca:'38',exam:'53',crHrs:3,future:false,resit:false},
+  ];
+  levels[1].status='complete';
+  levels[1].semesters[0].courses=[
+    {name:'Software Engineering',ca:'',exam:'',crHrs:3,future:false,resit:false},
+    {name:'Computer Networks',ca:'',exam:'',crHrs:3,future:false,resit:false},
+    {name:'Operating Systems',ca:'',exam:'',crHrs:3,future:false,resit:false},
+  ];
+  levels[2].status='inprogress';
+  levels[2].semesters[0].courses=[
+    {name:'Machine Learning',ca:'',exam:'',crHrs:3,future:false,resit:false},
+    {name:'Advanced Algorithms',ca:'',exam:'',crHrs:3,future:false,resit:false},
+    {name:'Final Year Project I',ca:'',exam:'',crHrs:6,future:true,resit:false},
+  ];
+  levels[3].status='future';
+  levels[3].semesters[0].courses=[
+    {name:'Final Year Project II',ca:'',exam:'',crHrs:6,future:true,resit:false},
+    {name:'Elective 1',ca:'',exam:'',crHrs:3,future:true,resit:false},
+  ];
+  levels[3].semesters[1].courses=[
+    {name:'Elective 2',ca:'',exam:'',crHrs:3,future:true,resit:false},
+    {name:'Elective 3',ca:'',exam:'',crHrs:3,future:true,resit:false},
+  ];
+  save();
+}
 
-renderAll();
+renderGrades();
 loadStats();
 </script>
 </body>
