@@ -303,14 +303,36 @@ function defaultData() {
 
 // ─── LOAD / SAVE ─────────────────────────────────────────────────────────────
 function save() {
-  try { localStorage.setItem('edupredict_v2', JSON.stringify({mode, levels})); } catch(e){}
+  try { localStorage.setItem('edupredict_v3', JSON.stringify({mode, levels})); } catch(e){}
 }
 function load() {
   try {
-    const d = JSON.parse(localStorage.getItem('edupredict_v2'));
-    if (d && d.levels) { mode = d.mode || 'GPA'; return d.levels; }
-  } catch(e){}
-  return null;
+    // Clear any old broken keys
+    localStorage.removeItem('edupredict_v2');
+    localStorage.removeItem('edupredict_v1');
+    const raw = localStorage.getItem('edupredict_v3');
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    if (!d || !Array.isArray(d.levels) || d.levels.length !== 4) return null;
+    // Validate each level has semesters with courses array
+    for (const lv of d.levels) {
+      if (!lv.semesters || !Array.isArray(lv.semesters)) return null;
+      for (const sem of lv.semesters) {
+        if (!Array.isArray(sem.courses)) return null;
+        // Ensure every course has required fields
+        sem.courses = sem.courses.map(c => ({
+          name: c.name || '',
+          ca: c.ca !== undefined ? c.ca : '',
+          exam: c.exam !== undefined ? c.exam : '',
+          crHrs: c.crHrs !== undefined ? c.crHrs : 3,
+          future: c.future || false,
+          resit: c.resit || false
+        }));
+      }
+    }
+    mode = d.mode || 'GPA';
+    return d.levels;
+  } catch(e) { return null; }
 }
 
 let levels = load() || defaultData();
@@ -484,7 +506,8 @@ function makeRow(li,si,ci) {
   const c=levels[li].semesters[si].courses[ci];
   const score=c.future?'':calcScore(c.ca,c.exam);
   const grade=c.future?'—':toGrade(score);
-  const wa=c.future?'—':(score===''?'—':(waVal(score,parseInt(c.crHrs)||0)??'—'));
+  const waCalc=c.future?null:(score===''?null:waVal(score,parseInt(c.crHrs)||0));
+  const wa=waCalc===null?'—':waCalc;
   const waStr=wa==='—'?'—':parseFloat(wa).toFixed(1);
   const grHtml=grade!=='—'?`<span class="badge g${grade}">${grade}</span>`:'<span class="gDash">—</span>';
   const scoreHtml=score===''?'<span class="gDash">—</span>':parseFloat(score).toFixed(1);
@@ -903,7 +926,7 @@ async function loadStats() {
 }
 
 // Pre-fill demo data if storage is empty
-if(!localStorage.getItem('edupredict_v2')) {
+if(!localStorage.getItem('edupredict_v3')) {
   levels[0].status='complete';
   levels[0].semesters[0].courses=[
     {name:'Object Oriented Programming with C++',ca:'32.9',exam:'55.3',crHrs:3,future:false,resit:false},
