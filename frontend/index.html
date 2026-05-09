@@ -193,8 +193,8 @@ tbody tr:hover td{background:#f8f9fc}
     <div class="pill">Model <strong>RF + GB</strong></div>
   </div>
   <div class="mode-toggle">
-    <button class="mode-btn active" id="mGPA" onclick="setMode('GPA')">GPA</button>
-    <button class="mode-btn" id="mCWA" onclick="setMode('CWA')">CWA</button>
+    <button class="mode-btn" id="mGPA" onclick="setMode('GPA')">GPA</button>
+    <button class="mode-btn active" id="mCWA" onclick="setMode('CWA')">CWA</button>
   </div>
 </header>
 
@@ -273,7 +273,7 @@ tbody tr:hover td{background:#f8f9fc}
 
 <script>
 // ─── STATE ───────────────────────────────────────────────────────────────────
-let mode = 'GPA';
+let mode = 'CWA';
 
 const LEVEL_NAMES = ['Level 100','Level 200','Level 300','Level 400'];
 const SEM_NAMES = ['Semester 1','Semester 2'];
@@ -330,7 +330,7 @@ function load() {
         }));
       }
     }
-    mode = d.mode || 'GPA';
+    mode = d.mode || 'CWA';
     return d.levels;
   } catch(e) { return null; }
 }
@@ -499,11 +499,13 @@ function renderGrades() {
           <button class="add-btn" onclick="addCourse(${li},${si},true)">+ Add Future Course</button>
         </div>`;
       block.appendChild(semDiv);
+    });
+    container.appendChild(block);
+    lv.semesters.forEach((sem,si)=>{
       const tbody=document.getElementById(`tb-${li}-${si}`);
       sem.courses.forEach((_,ci)=>tbody.appendChild(makeRow(li,si,ci)));
       refreshSumRow(li,si);
     });
-    container.appendChild(block);
   });
 }
 
