@@ -430,12 +430,17 @@ function setMode(m) {
   mode=m;
   document.getElementById('mGPA').classList.toggle('active',m==='GPA');
   document.getElementById('mCWA').classList.toggle('active',m==='CWA');
-  save(); renderGrades();
+  save();
+  if(activeTab==='summary') renderSummary();
+  else if(activeTab==='target') renderTarget();
+  else renderGrades();
 }
 
 // ─── TABS ────────────────────────────────────────────────────────────────────
 const TAB_IDS = {grades:'tabGrades',summary:'tabSummary',target:'tabTarget',predict:'tabPredict'};
+let activeTab = 'grades';
 function showTab(t) {
+  activeTab = t;
   Object.entries(TAB_IDS).forEach(([k,id])=>document.getElementById(id).style.display=k===t?'block':'none');
   document.querySelectorAll('.tab').forEach((el,i)=>{
     const keys=Object.keys(TAB_IDS);
@@ -549,6 +554,7 @@ function onUp(li,si,ci,field,val) {
   if(grEl) grEl.innerHTML=grade!=='—'?`<span class="badge g${grade}">${grade}</span>`:'<span class="gDash">—</span>';
   if(waEl) waEl.textContent=wa===null?'—':parseFloat(wa).toFixed(1);
   refreshSumRow(li,si);
+  refreshLevelCwa(li);
   save();
 }
 
@@ -559,6 +565,13 @@ function refreshSumRow(li,si) {
   const sfx=mode==='CWA'?'%':'/4.0';
   const grBadge=ss.grade!=='—'?`<span class="badge g${ss.grade}" style="margin-left:4px">${ss.grade}</span>`:'';
   el.cells[0].innerHTML=`<span class="hi">${levels[li].semesters[si].name} SWA: ${ss.val}${sfx} &nbsp;|&nbsp; Grade: ${grBadge}</span>`;
+}
+
+function refreshLevelCwa(li) {
+  const el=document.querySelector(`#levelsContainer .level-block:nth-child(${li+1}) .level-cwa`);
+  if(!el) return;
+  const ls=levelStats(levels[li]);
+  el.textContent=ls.val!=='—'?`CWA: ${ls.val}${mode==='CWA'?'%':'/4.0'}`:'No data yet';
 }
 
 function setStatus(li,s) {
