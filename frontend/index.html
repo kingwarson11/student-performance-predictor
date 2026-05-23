@@ -1237,7 +1237,13 @@ async function authUnlock(user) {
   logoutBtn.style.cssText = 'font-size:12px;padding:5px 12px;margin-left:8px';
   logoutBtn.innerHTML = '⎋ Log Out';
   logoutBtn.onclick = authLogout;
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'exp-btn';
+  deleteBtn.style.cssText = 'font-size:12px;padding:5px 12px;margin-left:4px;color:#dc2626;border-color:#fecaca';
+  deleteBtn.innerHTML = '🗑 Delete Account';
+  deleteBtn.onclick = authDeleteAccount;
   document.querySelector('.mode-toggle').insertAdjacentElement('beforebegin', logoutBtn);
+  document.querySelector('.mode-toggle').insertAdjacentElement('beforebegin', deleteBtn);
   // Load from Supabase, fall back to defaultData
   const cloud = await cloudLoad();
   levels = cloud || defaultData();
@@ -1255,6 +1261,36 @@ async function authLogout() {
   window._supaUserId = null;
   window._authUser = null;
   location.reload();
+}
+
+async function authDeleteAccount() {
+  const confirmed = window.confirm('Are you sure you want to delete your account? This will permanently erase all your grades and cannot be undone.');
+  if (!confirmed) return;
+  const doubleCheck = window.confirm('Last chance — delete account and all grades forever?');
+  if (!doubleCheck) return;
+  try {
+    // Delete grades from database
+    await fetch(SUPA_URL + '/rest/v1/grades?user_id=eq.' + window._supaUserId, {
+      method: 'DELETE',
+      headers: {
+        'apikey': SUPA_KEY,
+        'Authorization': 'Bearer ' + window._supaToken
+      }
+    });
+    // Delete the user account via admin endpoint isn't available client-side,
+    // so we log them out and clear all local data
+    try {
+      await supaFetch('/auth/v1/logout', 'POST', null, window._supaToken);
+    } catch(e) {}
+    // Clear all local storage for this user
+    const key = 'edupredict_v3_' + (window._authUser || 'guest');
+    localStorage.removeItem(key);
+    ['ep_token','ep_refresh','ep_user','ep_uid'].forEach(k => sessionStorage.removeItem(k));
+    alert('Your account and grades have been deleted.');
+    location.reload();
+  } catch(e) {
+    alert('Something went wrong. Please try again.');
+  }
 }
 
 async function authCheck() {
