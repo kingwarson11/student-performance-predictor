@@ -30,6 +30,8 @@ body{font-family:'DM Sans',sans-serif;background:#eef1f6;color:#1a1d23;font-size
 .tab{padding:9px 18px;font-size:13px;font-weight:500;cursor:pointer;color:#6b7280;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.15s}
 .tab:hover{color:#1a1d23}
 .tab.active{color:#1a56db;border-bottom-color:#1a56db}
+.tab-icon{font-size:16px;line-height:1;display:block}
+.tab-lbl{display:block}
 
 /* DASHBOARD CARDS */
 .dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
@@ -194,12 +196,82 @@ tbody tr:hover td{background:#f8f9fc}
 .auth-divider{height:1px;background:#f0f3f8;margin:18px 0}
 
 @media(max-width:700px){
+  /* HEADER */
+  .header{padding:0 14px;height:50px}
   .header-pills{display:none}
-  .dash-grid{grid-template-columns:1fr 1fr}
+  .logo-text{font-size:14px}
+  .mode-btn{padding:5px 10px;font-size:11px}
+  .exp-btn{font-size:11.5px;padding:6px 10px}
+
+  /* PAGE */
+  .page{padding:12px 10px 80px}
+
+  /* TABS — bottom nav bar */
+  .tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #d9dee8;border-bottom:none;z-index:100;margin:0;padding:0;box-shadow:0 -2px 8px rgba(0,0,0,0.08);justify-content:space-around}
+  .tab{flex:1;padding:10px 4px 8px;font-size:10.5px;text-align:center;border-bottom:none;border-top:2px solid transparent;margin:0;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .tab.active{color:#1a56db;border-top-color:#1a56db;border-bottom:none}
+
+  /* CARDS */
+  .dash-grid{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+  .dash-card{padding:11px 12px}
+  .dash-card .dc-val{font-size:22px}
+
+  /* LEVEL BLOCKS */
+  .level-header{padding:9px 12px;flex-wrap:wrap;gap:6px}
+  .level-status{flex-wrap:wrap;gap:4px}
+  .status-btn{font-size:10.5px;padding:3px 8px}
+
+  /* SEM */
+  .sem-title-bar{padding:6px 12px}
+
+  /* TABLE — horizontal scroll */
+  .level-block{overflow-x:auto}
+  table{font-size:12px;min-width:520px}
+  thead th{padding:6px 8px;font-size:10px}
+  tbody td{padding:5px 8px}
+  .num-input{width:46px;font-size:11px;padding:3px 4px}
+  .cr-sel{font-size:11px;padding:3px 4px}
+  .course-input{font-size:12px}
+  .add-course-row{padding:6px 10px}
+
+  /* WHAT-IF */
   .whatif-grid{grid-template-columns:1fr}
-  .page{padding:14px 10px 60px}
-  table{font-size:12px}
-  .num-input{width:48px}
+  .whatif-box{padding:14px}
+  .wi-field input{font-size:14px;padding:9px 10px}
+
+  /* TARGET CARDS */
+  .target-grid{grid-template-columns:1fr 1fr}
+  .target-card .tc-need{font-size:18px}
+
+  /* DEGREE BANNER */
+  .class-banner{padding:12px 14px}
+  .class-banner .cb-cwa{font-size:20px}
+
+  /* PREDICT */
+  .predict-box{padding:14px}
+  .pred-grade{font-size:40px}
+  .pred-btn{width:100%;justify-content:center;padding:13px}
+
+  /* EXPORT ROW */
+  .export-row{gap:6px}
+  .exp-btn{flex:1;justify-content:center;font-size:12px;padding:8px 6px}
+
+  /* CHART */
+  .cwa-chart{gap:4px}
+
+  /* AUTH */
+  .auth-card{padding:28px 20px;border-radius:14px}
+  .auth-field input{font-size:16px;padding:12px 13px}
+  .auth-btn{padding:14px;font-size:15px}
+
+  /* SUMMARY TRANSCRIPT */
+  .sum-table-wrap{overflow-x:auto}
+}
+
+@media(max-width:400px){
+  .dash-grid{grid-template-columns:1fr 1fr}
+  .target-grid{grid-template-columns:1fr}
+  .tab{font-size:9.5px;padding:9px 2px 7px}
 }
 </style>
 </head>
@@ -251,10 +323,10 @@ tbody tr:hover td{background:#f8f9fc}
 
 <div class="page">
   <div class="tabs">
-    <div class="tab active" onclick="showTab('grades')">Grade Entry</div>
-    <div class="tab" onclick="showTab('summary')">Summary</div>
-    <div class="tab" onclick="showTab('target')">First Class Target</div>
-    <div class="tab" onclick="showTab('predict')">AI Prediction</div>
+    <div class="tab active" onclick="showTab('grades')"><span class="tab-icon">📝</span><span class="tab-lbl">Grades</span></div>
+    <div class="tab" onclick="showTab('summary')"><span class="tab-icon">📊</span><span class="tab-lbl">Summary</span></div>
+    <div class="tab" onclick="showTab('target')"><span class="tab-icon">🎯</span><span class="tab-lbl">Target</span></div>
+    <div class="tab" onclick="showTab('predict')"><span class="tab-icon">🤖</span><span class="tab-lbl">Predict</span></div>
   </div>
 
   <!-- GRADES TAB -->
@@ -527,6 +599,7 @@ function renderGrades() {
           <span class="sem-title">${sem.name}</span>
           <span class="sem-swa">${ss.val!=='—'?`SWA: ${ss.val}${mode==='CWA'?'%':''} · Grade: ${ss.grade}`:''}</span>
         </div>
+        <div class="sum-table-wrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
         <table>
           <thead><tr>
             <th style="width:32%">Course Name / Code</th>
@@ -542,6 +615,7 @@ function renderGrades() {
           <tbody id="tb-${li}-${si}"></tbody>
           <tfoot><tr class="sum-row" id="sum-${li}-${si}"><td colspan="9">&nbsp;</td></tr></tfoot>
         </table>
+        </div>
         <div class="add-course-row">
           <button class="add-btn" onclick="addCourse(${li},${si},false)">+ Add Course</button>
           <button class="add-btn" onclick="addCourse(${li},${si},true)">+ Add Future Course</button>
@@ -736,6 +810,7 @@ function renderSummaryLevels() {
           <span class="sem-title">${sem.name}</span>
           <span class="sem-swa">${ss.val!=='—'?`SWA: ${ss.val}${sfx} · Grade: `:''} ${grBadge}</span>
         </div>
+        <div class="sum-table-wrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
         <table><thead><tr>
           <th style="width:34%">Course Name / Code</th>
           <th class="num">CA</th><th class="num">Exam</th><th class="num">Score</th>
