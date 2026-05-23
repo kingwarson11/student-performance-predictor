@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>EduPredict — University Performance Tracker</title>
+<title>Warren's EduPredict — University Performance Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -281,8 +281,8 @@ tbody tr:hover td{background:#f8f9fc}
 <div id="authOverlay">
   <div class="auth-card">
     <div class="auth-logo">
-      <div class="auth-logo-mark">EP</div>
-      <div class="auth-logo-text">Edu<span>Predict</span></div>
+      <div class="auth-logo-mark">WE</div>
+      <div class="auth-logo-text">Warren's Edu<span>Predict</span></div>
     </div>
     <div class="auth-tabs">
       <button class="auth-tab active" id="aTabLogin" onclick="authShowTab('login')">Log In</button>
@@ -308,8 +308,8 @@ tbody tr:hover td{background:#f8f9fc}
 
 <header class="header">
   <div class="logo">
-    <div class="logo-mark">EP</div>
-    <div class="logo-text">Edu<span>Predict</span></div>
+    <div class="logo-mark">WE</div>
+    <div class="logo-text">Warren's Edu<span>Predict</span></div>
   </div>
   <div class="header-pills">
     <div class="pill">Accuracy <strong id="hAcc">—</strong></div>
@@ -621,11 +621,13 @@ function renderGrades() {
           <button class="add-btn" onclick="addCourse(${li},${si},true)">+ Add Future Course</button>
         </div>`;
       block.appendChild(semDiv);
+    });
+    container.appendChild(block);
+    lv.semesters.forEach((sem,si)=>{
       const tbody=document.getElementById(`tb-${li}-${si}`);
       sem.courses.forEach((_,ci)=>tbody.appendChild(makeRow(li,si,ci)));
       refreshSumRow(li,si);
     });
-    container.appendChild(block);
   });
 }
 
