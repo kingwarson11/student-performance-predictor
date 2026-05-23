@@ -171,6 +171,28 @@ tbody tr:hover td{background:#f8f9fc}
 .exp-btn{background:#fff;border:1px solid #d9dee8;border-radius:7px;padding:7px 14px;font-size:12.5px;font-weight:500;color:#374151;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;display:flex;align-items:center;gap:6px}
 .exp-btn:hover{border-color:#1a56db;color:#1a56db;background:#f0f5ff}
 
+/* ── AUTH OVERLAY ───────────────────────────────────────────────────────── */
+#authOverlay{position:fixed;inset:0;background:#eef1f6;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-card{background:#fff;border:1px solid #d9dee8;border-radius:16px;padding:36px 32px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,0.08)}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;justify-content:center}
+.auth-logo-mark{width:36px;height:36px;background:#1a56db;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:700}
+.auth-logo-text{font-size:18px;font-weight:600;letter-spacing:-0.3px}
+.auth-logo-text span{color:#1a56db}
+.auth-tabs{display:flex;background:#f0f3f8;border-radius:9px;padding:3px;margin-bottom:24px;gap:2px}
+.auth-tab{flex:1;padding:8px;font-size:13px;font-weight:600;border:none;border-radius:7px;cursor:pointer;background:transparent;color:#6b7280;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.auth-tab.active{background:#fff;color:#1a56db;box-shadow:0 1px 4px rgba(0,0,0,0.10)}
+.auth-field{margin-bottom:14px}
+.auth-field label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;letter-spacing:0.2px}
+.auth-field input{width:100%;padding:10px 13px;border:1.5px solid #d9dee8;border-radius:8px;font-size:13.5px;font-family:'DM Sans',sans-serif;color:#1a1d23;background:#fff;outline:none;transition:border-color 0.15s}
+.auth-field input:focus{border-color:#1a56db;box-shadow:0 0 0 3px rgba(26,86,219,0.08)}
+.auth-btn{width:100%;padding:11px;background:#1a56db;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:6px;transition:background 0.15s;letter-spacing:0.1px}
+.auth-btn:hover{background:#1648c0}
+.auth-btn:active{background:#1240b0}
+.auth-error{font-size:12px;color:#dc2626;margin-top:10px;padding:8px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:7px;display:none}
+.auth-error.show{display:block}
+.auth-hint{font-size:11.5px;color:#9aa5b8;text-align:center;margin-top:16px;line-height:1.5}
+.auth-divider{height:1px;background:#f0f3f8;margin:18px 0}
+
 @media(max-width:700px){
   .header-pills{display:none}
   .dash-grid{grid-template-columns:1fr 1fr}
@@ -183,6 +205,35 @@ tbody tr:hover td{background:#f8f9fc}
 </head>
 <body>
 
+<!-- ── AUTH OVERLAY ── -->
+<div id="authOverlay">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-mark">EP</div>
+      <div class="auth-logo-text">Edu<span>Predict</span></div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="aTabLogin" onclick="authShowTab('login')">Log In</button>
+      <button class="auth-tab" id="aTabRegister" onclick="authShowTab('register')">Create Account</button>
+    </div>
+    <div id="aLogin">
+      <div class="auth-field"><label>USERNAME</label><input type="text" id="aLoginUser" placeholder="Enter your username" autocomplete="username"/></div>
+      <div class="auth-field"><label>PASSWORD</label><input type="password" id="aLoginPass" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')authLogin()"/></div>
+      <button class="auth-btn" onclick="authLogin()">Log In &rarr;</button>
+      <div class="auth-error" id="aLoginErr"></div>
+      <div class="auth-hint">Your grades are private to your account.<br>No one else can see your data.</div>
+    </div>
+    <div id="aRegister" style="display:none">
+      <div class="auth-field"><label>USERNAME</label><input type="text" id="aRegUser" placeholder="Choose a username" autocomplete="username"/></div>
+      <div class="auth-field"><label>PASSWORD</label><input type="password" id="aRegPass" placeholder="Choose a password" autocomplete="new-password"/></div>
+      <div class="auth-field"><label>CONFIRM PASSWORD</label><input type="password" id="aRegPass2" placeholder="Repeat your password" autocomplete="new-password" onkeydown="if(event.key==='Enter')authRegister()"/></div>
+      <button class="auth-btn" onclick="authRegister()">Create Account &rarr;</button>
+      <div class="auth-error" id="aRegErr"></div>
+      <div class="auth-hint">No email needed. Your data stays private<br>and is only accessible with your password.</div>
+    </div>
+  </div>
+</div>
+
 <header class="header">
   <div class="logo">
     <div class="logo-mark">EP</div>
@@ -193,8 +244,8 @@ tbody tr:hover td{background:#f8f9fc}
     <div class="pill">Model <strong>RF + GB</strong></div>
   </div>
   <div class="mode-toggle">
-    <button class="mode-btn" id="mGPA" onclick="setMode('GPA')">GPA</button>
-    <button class="mode-btn active" id="mCWA" onclick="setMode('CWA')">CWA</button>
+    <button class="mode-btn active" id="mGPA" onclick="setMode('GPA')">GPA</button>
+    <button class="mode-btn" id="mCWA" onclick="setMode('CWA')">CWA</button>
   </div>
 </header>
 
@@ -273,7 +324,7 @@ tbody tr:hover td{background:#f8f9fc}
 
 <script>
 // ─── STATE ───────────────────────────────────────────────────────────────────
-let mode = 'CWA';
+let mode = 'GPA';
 
 const LEVEL_NAMES = ['Level 100','Level 200','Level 300','Level 400'];
 const SEM_NAMES = ['Semester 1','Semester 2'];
@@ -303,14 +354,16 @@ function defaultData() {
 
 // ─── LOAD / SAVE ─────────────────────────────────────────────────────────────
 function save() {
-  try { localStorage.setItem('edupredict_v3', JSON.stringify({mode, levels})); } catch(e){}
+  const key = 'edupredict_v3' + (window._authUser ? '_' + window._authUser : '');
+  try { localStorage.setItem(key, JSON.stringify({mode, levels})); } catch(e){}
 }
 function load() {
   try {
     // Clear any old broken keys
     localStorage.removeItem('edupredict_v2');
     localStorage.removeItem('edupredict_v1');
-    const raw = localStorage.getItem('edupredict_v3');
+    const key = 'edupredict_v3' + (window._authUser ? '_' + window._authUser : '');
+    const raw = localStorage.getItem(key);
     if (!raw) return null;
     const d = JSON.parse(raw);
     if (!d || !Array.isArray(d.levels) || d.levels.length !== 4) return null;
@@ -330,7 +383,7 @@ function load() {
         }));
       }
     }
-    mode = d.mode || 'CWA';
+    mode = d.mode || 'GPA';
     return d.levels;
   } catch(e) { return null; }
 }
@@ -430,17 +483,12 @@ function setMode(m) {
   mode=m;
   document.getElementById('mGPA').classList.toggle('active',m==='GPA');
   document.getElementById('mCWA').classList.toggle('active',m==='CWA');
-  save();
-  if(activeTab==='summary') renderSummary();
-  else if(activeTab==='target') renderTarget();
-  else renderGrades();
+  save(); renderGrades();
 }
 
 // ─── TABS ────────────────────────────────────────────────────────────────────
 const TAB_IDS = {grades:'tabGrades',summary:'tabSummary',target:'tabTarget',predict:'tabPredict'};
-let activeTab = 'grades';
 function showTab(t) {
-  activeTab = t;
   Object.entries(TAB_IDS).forEach(([k,id])=>document.getElementById(id).style.display=k===t?'block':'none');
   document.querySelectorAll('.tab').forEach((el,i)=>{
     const keys=Object.keys(TAB_IDS);
@@ -499,13 +547,11 @@ function renderGrades() {
           <button class="add-btn" onclick="addCourse(${li},${si},true)">+ Add Future Course</button>
         </div>`;
       block.appendChild(semDiv);
-    });
-    container.appendChild(block);
-    lv.semesters.forEach((sem,si)=>{
       const tbody=document.getElementById(`tb-${li}-${si}`);
       sem.courses.forEach((_,ci)=>tbody.appendChild(makeRow(li,si,ci)));
       refreshSumRow(li,si);
     });
+    container.appendChild(block);
   });
 }
 
@@ -556,7 +602,6 @@ function onUp(li,si,ci,field,val) {
   if(grEl) grEl.innerHTML=grade!=='—'?`<span class="badge g${grade}">${grade}</span>`:'<span class="gDash">—</span>';
   if(waEl) waEl.textContent=wa===null?'—':parseFloat(wa).toFixed(1);
   refreshSumRow(li,si);
-  refreshLevelCwa(li);
   save();
 }
 
@@ -567,13 +612,6 @@ function refreshSumRow(li,si) {
   const sfx=mode==='CWA'?'%':'/4.0';
   const grBadge=ss.grade!=='—'?`<span class="badge g${ss.grade}" style="margin-left:4px">${ss.grade}</span>`:'';
   el.cells[0].innerHTML=`<span class="hi">${levels[li].semesters[si].name} SWA: ${ss.val}${sfx} &nbsp;|&nbsp; Grade: ${grBadge}</span>`;
-}
-
-function refreshLevelCwa(li) {
-  const el=document.querySelector(`#levelsContainer .level-block:nth-child(${li+1}) .level-cwa`);
-  if(!el) return;
-  const ls=levelStats(levels[li]);
-  el.textContent=ls.val!=='—'?`CWA: ${ls.val}${mode==='CWA'?'%':'/4.0'}`:'No data yet';
 }
 
 function setStatus(li,s) {
@@ -985,8 +1023,107 @@ if(!localStorage.getItem('edupredict_v3')) {
   save();
 }
 
-renderGrades();
-loadStats();
+// ─── AUTH ────────────────────────────────────────────────────────────────────
+const AUTH_KEY = 'edupredict_accounts';
+const SESSION_KEY = 'edupredict_session';
+
+function authGetAccounts() {
+  try { return JSON.parse(localStorage.getItem(AUTH_KEY) || '{}'); } catch(e) { return {}; }
+}
+
+function authSaveAccounts(accounts) {
+  localStorage.setItem(AUTH_KEY, JSON.stringify(accounts));
+}
+
+function authHash(str) {
+  // Simple deterministic hash — not cryptographic but prevents plaintext storage
+  let h = 0;
+  for (let i = 0; i < str.length; i++) { h = Math.imul(31, h) + str.charCodeAt(i) | 0; }
+  return h.toString(36);
+}
+
+function authShowTab(t) {
+  document.getElementById('aLogin').style.display = t === 'login' ? 'block' : 'none';
+  document.getElementById('aRegister').style.display = t === 'register' ? 'block' : 'none';
+  document.getElementById('aTabLogin').classList.toggle('active', t === 'login');
+  document.getElementById('aTabRegister').classList.toggle('active', t === 'register');
+}
+
+function authShowError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function authClearErrors() {
+  ['aLoginErr','aRegErr'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+}
+
+function authLogin() {
+  authClearErrors();
+  const user = document.getElementById('aLoginUser').value.trim().toLowerCase();
+  const pass = document.getElementById('aLoginPass').value;
+  if (!user || !pass) return authShowError('aLoginErr', 'Please fill in all fields.');
+  const accounts = authGetAccounts();
+  if (!accounts[user]) return authShowError('aLoginErr', 'No account found with that username.');
+  if (accounts[user].hash !== authHash(pass)) return authShowError('aLoginErr', 'Incorrect password.');
+  sessionStorage.setItem(SESSION_KEY, user);
+  authUnlock(user);
+}
+
+function authRegister() {
+  authClearErrors();
+  const user = document.getElementById('aRegUser').value.trim().toLowerCase();
+  const pass = document.getElementById('aRegPass').value;
+  const pass2 = document.getElementById('aRegPass2').value;
+  if (!user || !pass || !pass2) return authShowError('aRegErr', 'Please fill in all fields.');
+  if (user.length < 3) return authShowError('aRegErr', 'Username must be at least 3 characters.');
+  if (pass.length < 4) return authShowError('aRegErr', 'Password must be at least 4 characters.');
+  if (pass !== pass2) return authShowError('aRegErr', 'Passwords do not match.');
+  const accounts = authGetAccounts();
+  if (accounts[user]) return authShowError('aRegErr', 'That username is already taken.');
+  accounts[user] = { hash: authHash(pass) };
+  authSaveAccounts(accounts);
+  sessionStorage.setItem(SESSION_KEY, user);
+  authUnlock(user);
+}
+
+function authUnlock(user) {
+  // Scope all storage to this user
+  window._authUser = user;
+  document.getElementById('authOverlay').style.display = 'none';
+  // Add logout button to header
+  const logoutBtn = document.createElement('button');
+  logoutBtn.className = 'exp-btn';
+  logoutBtn.style.cssText = 'font-size:12px;padding:5px 12px;margin-left:8px';
+  logoutBtn.innerHTML = '⎋ Log Out';
+  logoutBtn.onclick = authLogout;
+  document.querySelector('.mode-toggle').insertAdjacentElement('beforebegin', logoutBtn);
+  // Reload data scoped to this user
+  levels = load() || defaultData();
+  renderGrades();
+  loadStats();
+}
+
+function authLogout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  window._authUser = null;
+  location.reload();
+}
+
+function authCheck() {
+  const user = sessionStorage.getItem(SESSION_KEY);
+  if (user) {
+    const accounts = authGetAccounts();
+    if (accounts[user]) { authUnlock(user); return; }
+  }
+  document.getElementById('authOverlay').style.display = 'flex';
+}
+
+
+authCheck();
 </script>
 </body>
 </html>
