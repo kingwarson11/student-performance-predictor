@@ -581,13 +581,8 @@ function renderGrades() {
     block.innerHTML=`
       <div class="level-header">
         <h3>${lv.name}</h3>
-        <div class="level-status">
-          ${['complete','inprogress','future'].map(s=>`
-            <button class="status-btn${lv.status===s?' active-status':''}" onclick="setStatus(${li},'${s}')">
-              ${s==='complete'?'✓ Complete':s==='inprogress'?'In Progress':'Future'}
-            </button>`).join('')}
-        </div>
-        <div class="level-cwa">${lvStats.val!=='—'?`CWA: ${lvStats.val}${mode==='CWA'?'%':'/4.0'}`:'No data yet'}</div>
+
+        <div class="level-cwa">${lvStats.val!=='—'?`${mode==='CWA'?'CWA':'GPA'}: ${lvStats.val}${mode==='CWA'?'%':'/4.0'}`:'No data yet'}</div>
       </div>`;
     lv.semesters.forEach((sem,si)=>{
       const ss=semStats(sem);
@@ -802,7 +797,7 @@ function renderSummaryLevels() {
     html+=`<div class="level-block" style="margin-bottom:14px">
       <div class="level-header">
         <h3>${lv.name}</h3>
-        <div class="level-cwa">${ls.val!=='—'?`Level CWA: ${ls.val}${sfx}`:''}</div>
+        <div class="level-cwa">${ls.val!=='—'?`Level ${mode==='CWA'?'CWA':'GPA'}: ${ls.val}${sfx}`:''}</div>
       </div>`;
     lv.semesters.forEach(sem=>{
       const ss=semStats(sem);
@@ -839,7 +834,7 @@ function renderSummaryLevels() {
       </tr></tfoot></table></div>`;
     });
     html+=`<div style="text-align:right;padding:8px 16px;font-size:12px;font-weight:600;color:#374151;background:#f8f9fc;border-top:1px solid #d9dee8">
-      Level ${li+1} CWA: <span style="color:#1a56db">${ls.val}${sfx}</span></div></div>`;
+      Level ${li+1} ${mode==='CWA'?'CWA':'GPA'}: <span style="color:#1a56db">${ls.val}${sfx}</span></div></div>`;
   });
   const ov=overallStats();
   html+=`<div style="text-align:right;padding:10px 16px;font-size:13px;font-weight:600;color:#374151;background:#fff;border:1px solid #d9dee8;border-radius:10px;margin-top:4px">
