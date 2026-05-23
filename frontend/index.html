@@ -291,7 +291,7 @@ tbody tr:hover td{background:#f8f9fc}
     <div id="aLogin">
       <div class="auth-field"><label>USERNAME</label><input type="text" id="aLoginUser" placeholder="Enter your username" autocomplete="username"/></div>
       <div class="auth-field"><label>PASSWORD</label><input type="password" id="aLoginPass" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')authLogin()"/></div>
-      <button class="auth-btn" onclick="authLogin()">Log In &rarr;</button>
+      <button class="auth-btn" id="aLoginBtn" onclick="authLogin()">Log In →</button>
       <div class="auth-error" id="aLoginErr"></div>
       <div class="auth-hint">Your grades are private to your account.<br>No one else can see your data.</div>
     </div>
@@ -299,7 +299,7 @@ tbody tr:hover td{background:#f8f9fc}
       <div class="auth-field"><label>USERNAME</label><input type="text" id="aRegUser" placeholder="Choose a username" autocomplete="username"/></div>
       <div class="auth-field"><label>PASSWORD</label><input type="password" id="aRegPass" placeholder="Choose a password" autocomplete="new-password"/></div>
       <div class="auth-field"><label>CONFIRM PASSWORD</label><input type="password" id="aRegPass2" placeholder="Repeat your password" autocomplete="new-password" onkeydown="if(event.key==='Enter')authRegister()"/></div>
-      <button class="auth-btn" onclick="authRegister()">Create Account &rarr;</button>
+      <button class="auth-btn" id="aRegBtn" onclick="authRegister()">Create Account →</button>
       <div class="auth-error" id="aRegErr"></div>
       <div class="auth-hint">No email needed. Your data stays private<br>and is only accessible with your password.</div>
     </div>
@@ -425,16 +425,23 @@ function defaultData() {
 }
 
 // ─── LOAD / SAVE ─────────────────────────────────────────────────────────────
+let _saveTimer = null;
 function save() {
-  const key = 'edupredict_v3' + (window._authUser ? '_' + window._authUser : '');
-  try { localStorage.setItem(key, JSON.stringify({mode, levels})); } catch(e){}
+  // Keep localStorage as offline backup
+  try {
+    const key = 'edupredict_v3_' + (window._authUser || 'guest');
+    localStorage.setItem(key, JSON.stringify({mode, levels}));
+  } catch(e){}
+  // Debounce cloud save — waits 1.5s after last change
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => cloudSave(), 1500);
 }
 function load() {
   try {
     // Clear any old broken keys
     localStorage.removeItem('edupredict_v2');
     localStorage.removeItem('edupredict_v1');
-    const key = 'edupredict_v3' + (window._authUser ? '_' + window._authUser : '');
+    const key = 'edupredict_v3_' + (window._authUser || 'guest');
     const raw = localStorage.getItem(key);
     if (!raw) return null;
     const d = JSON.parse(raw);
@@ -1095,23 +1102,20 @@ if(!localStorage.getItem('edupredict_v3')) {
   save();
 }
 
-// ─── AUTH ────────────────────────────────────────────────────────────────────
-const AUTH_KEY = 'edupredict_accounts';
-const SESSION_KEY = 'edupredict_session';
+// ─── SUPABASE AUTH ───────────────────────────────────────────────────────────
+const SUPA_URL = 'https://qizrspqyghjomydqybet.supabase.co';
+const SUPA_KEY = 'sb_publishable_RiSKpQ8M1MF-1GS93YZN2Q_Czydnfar';
 
-function authGetAccounts() {
-  try { return JSON.parse(localStorage.getItem(AUTH_KEY) || '{}'); } catch(e) { return {}; }
-}
-
-function authSaveAccounts(accounts) {
-  localStorage.setItem(AUTH_KEY, JSON.stringify(accounts));
-}
-
-function authHash(str) {
-  // Simple deterministic hash — not cryptographic but prevents plaintext storage
-  let h = 0;
-  for (let i = 0; i < str.length; i++) { h = Math.imul(31, h) + str.charCodeAt(i) | 0; }
-  return h.toString(36);
+async function supaFetch(path, method='GET', body=null, token=null) {
+  const headers = {
+    'Content-Type': 'application/json',
+    'apikey': SUPA_KEY,
+    'Authorization': 'Bearer ' + (token || SUPA_KEY)
+  };
+  const res = await fetch(SUPA_URL + path, {
+    method, headers, body: body ? JSON.stringify(body) : null
+  });
+  return res;
 }
 
 function authShowTab(t) {
@@ -1128,72 +1132,192 @@ function authShowError(id, msg) {
 }
 
 function authClearErrors() {
-  ['aLoginErr','aRegErr'].forEach(id => {
-    document.getElementById(id).classList.remove('show');
-  });
+  ['aLoginErr','aRegErr'].forEach(id => document.getElementById(id).classList.remove('show'));
 }
 
-function authLogin() {
+function authSetLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.textContent = loading ? 'Please wait...' : (btnId === 'aLoginBtn' ? 'Log In →' : 'Create Account →');
+}
+
+async function authLogin() {
   authClearErrors();
   const user = document.getElementById('aLoginUser').value.trim().toLowerCase();
   const pass = document.getElementById('aLoginPass').value;
   if (!user || !pass) return authShowError('aLoginErr', 'Please fill in all fields.');
-  const accounts = authGetAccounts();
-  if (!accounts[user]) return authShowError('aLoginErr', 'No account found with that username.');
-  if (accounts[user].hash !== authHash(pass)) return authShowError('aLoginErr', 'Incorrect password.');
-  sessionStorage.setItem(SESSION_KEY, user);
-  authUnlock(user);
+  authSetLoading('aLoginBtn', true);
+  try {
+    const res = await supaFetch('/auth/v1/token?grant_type=password', 'POST', {
+      email: user + '@edupredict.local',
+      password: pass
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      const msg = data.error_description || data.msg || 'Login failed.';
+      if (msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('credentials')) {
+        authShowError('aLoginErr', 'Incorrect username or password.');
+      } else {
+        authShowError('aLoginErr', msg);
+      }
+      return;
+    }
+    window._supaToken = data.access_token;
+    window._supaRefresh = data.refresh_token;
+    window._supaUserId = data.user.id;
+    window._supaUsername = user;
+    sessionStorage.setItem('ep_token', data.access_token);
+    sessionStorage.setItem('ep_refresh', data.refresh_token);
+    sessionStorage.setItem('ep_user', user);
+    sessionStorage.setItem('ep_uid', data.user.id);
+    await authUnlock(user);
+  } catch(e) {
+    authShowError('aLoginErr', 'Network error. Check your connection.');
+  } finally {
+    authSetLoading('aLoginBtn', false);
+  }
 }
 
-function authRegister() {
+async function authRegister() {
   authClearErrors();
   const user = document.getElementById('aRegUser').value.trim().toLowerCase();
   const pass = document.getElementById('aRegPass').value;
   const pass2 = document.getElementById('aRegPass2').value;
   if (!user || !pass || !pass2) return authShowError('aRegErr', 'Please fill in all fields.');
   if (user.length < 3) return authShowError('aRegErr', 'Username must be at least 3 characters.');
-  if (pass.length < 4) return authShowError('aRegErr', 'Password must be at least 4 characters.');
+  if (pass.length < 6) return authShowError('aRegErr', 'Password must be at least 6 characters.');
   if (pass !== pass2) return authShowError('aRegErr', 'Passwords do not match.');
-  const accounts = authGetAccounts();
-  if (accounts[user]) return authShowError('aRegErr', 'That username is already taken.');
-  accounts[user] = { hash: authHash(pass) };
-  authSaveAccounts(accounts);
-  sessionStorage.setItem(SESSION_KEY, user);
-  authUnlock(user);
+  authSetLoading('aRegBtn', true);
+  try {
+    const res = await supaFetch('/auth/v1/signup', 'POST', {
+      email: user + '@edupredict.local',
+      password: pass,
+      data: { username: user }
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      const msg = data.error_description || data.msg || 'Registration failed.';
+      if (msg.toLowerCase().includes('already')) {
+        authShowError('aRegErr', 'That username is already taken.');
+      } else {
+        authShowError('aRegErr', msg);
+      }
+      return;
+    }
+    // Auto-login after register
+    const loginRes = await supaFetch('/auth/v1/token?grant_type=password', 'POST', {
+      email: user + '@edupredict.local',
+      password: pass
+    });
+    const loginData = await loginRes.json();
+    if (!loginRes.ok) return authShowError('aRegErr', 'Account created! Please log in.');
+    window._supaToken = loginData.access_token;
+    window._supaRefresh = loginData.refresh_token;
+    window._supaUserId = loginData.user.id;
+    window._supaUsername = user;
+    sessionStorage.setItem('ep_token', loginData.access_token);
+    sessionStorage.setItem('ep_refresh', loginData.refresh_token);
+    sessionStorage.setItem('ep_user', user);
+    sessionStorage.setItem('ep_uid', loginData.user.id);
+    await authUnlock(user);
+  } catch(e) {
+    authShowError('aRegErr', 'Network error. Check your connection.');
+  } finally {
+    authSetLoading('aRegBtn', false);
+  }
 }
 
-function authUnlock(user) {
-  // Scope all storage to this user
+async function authUnlock(user) {
   window._authUser = user;
   document.getElementById('authOverlay').style.display = 'none';
-  // Add logout button to header
+  // Add logout button
   const logoutBtn = document.createElement('button');
   logoutBtn.className = 'exp-btn';
   logoutBtn.style.cssText = 'font-size:12px;padding:5px 12px;margin-left:8px';
   logoutBtn.innerHTML = '⎋ Log Out';
   logoutBtn.onclick = authLogout;
   document.querySelector('.mode-toggle').insertAdjacentElement('beforebegin', logoutBtn);
-  // Reload data scoped to this user
-  levels = load() || defaultData();
+  // Load from Supabase, fall back to defaultData
+  const cloud = await cloudLoad();
+  levels = cloud || defaultData();
+  if (cloud) { mode = cloud._mode || 'CWA'; }
   renderGrades();
   loadStats();
 }
 
-function authLogout() {
-  sessionStorage.removeItem(SESSION_KEY);
+async function authLogout() {
+  try {
+    await supaFetch('/auth/v1/logout', 'POST', null, window._supaToken);
+  } catch(e) {}
+  ['ep_token','ep_refresh','ep_user','ep_uid'].forEach(k => sessionStorage.removeItem(k));
+  window._supaToken = null;
+  window._supaUserId = null;
   window._authUser = null;
   location.reload();
 }
 
-function authCheck() {
-  const user = sessionStorage.getItem(SESSION_KEY);
-  if (user) {
-    const accounts = authGetAccounts();
-    if (accounts[user]) { authUnlock(user); return; }
+async function authCheck() {
+  const token = sessionStorage.getItem('ep_token');
+  const user = sessionStorage.getItem('ep_user');
+  const uid = sessionStorage.getItem('ep_uid');
+  if (token && user && uid) {
+    // Verify token still valid
+    const res = await supaFetch('/auth/v1/user', 'GET', null, token);
+    if (res.ok) {
+      window._supaToken = token;
+      window._supaUserId = uid;
+      window._supaUsername = user;
+      await authUnlock(user);
+      return;
+    }
   }
   document.getElementById('authOverlay').style.display = 'flex';
 }
 
+// ─── CLOUD SAVE / LOAD ───────────────────────────────────────────────────────
+async function cloudSave() {
+  if (!window._supaToken || !window._supaUserId) return;
+  const payload = { user_id: window._supaUserId, data: JSON.stringify({mode, levels}) };
+  const headers = {
+    'Content-Type': 'application/json',
+    'apikey': SUPA_KEY,
+    'Authorization': 'Bearer ' + window._supaToken,
+    'Prefer': 'resolution=merge-duplicates'
+  };
+  await fetch(SUPA_URL + '/rest/v1/grades?on_conflict=user_id', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload)
+  });
+}
+
+async function cloudLoad() {
+  if (!window._supaToken || !window._supaUserId) return null;
+  const res = await supaFetch(
+    '/rest/v1/grades?user_id=eq.' + window._supaUserId + '&select=data',
+    'GET', null, window._supaToken
+  );
+  if (!res.ok) return null;
+  const rows = await res.json();
+  if (!rows || rows.length === 0) return null;
+  try {
+    const d = JSON.parse(rows[0].data);
+    if (!d || !Array.isArray(d.levels) || d.levels.length !== 4) return null;
+    for (const lv of d.levels) {
+      if (!lv.semesters || !Array.isArray(lv.semesters)) return null;
+      for (const sem of lv.semesters) {
+        if (!Array.isArray(sem.courses)) return null;
+        sem.courses = sem.courses.map(c => ({
+          name: c.name||'', ca: c.ca||'', exam: c.exam||'',
+          crHrs: c.crHrs||3, future: !!c.future, resit: !!c.resit
+        }));
+      }
+    }
+    d._mode = d.mode || 'CWA';
+    return d.levels ? d : null;
+  } catch(e) { return null; }
+}
 
 authCheck();
 </script>
