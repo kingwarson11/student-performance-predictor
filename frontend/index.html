@@ -486,8 +486,8 @@ function calcScore(ca,exam) {
 }
 function waVal(score,crHrs) {
   if (score===''||crHrs===0) return null;
-  const g=toGrade(score); if(g==='—') return null;
-  return mode==='CWA' ? GP[g]*crHrs*20 : GP[g]*crHrs;
+  const s=parseFloat(score); if(isNaN(s)) return null;
+  return s * crHrs;
 }
 function semStats(sem) {
   let pts=0,cr=0;
