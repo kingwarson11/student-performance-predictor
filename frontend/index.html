@@ -82,6 +82,11 @@ body{font-family:'DM Sans',sans-serif;background:#eef1f6;color:#1a1d23;font-size
 .status-btn{font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);background:transparent;color:rgba(255,255,255,0.7);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
 .status-btn.active-status{background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.6)}
 .level-cwa{font-size:12px;font-family:'DM Mono',monospace;color:#93c5fd;font-weight:500}
+.level-total-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:linear-gradient(90deg,#1e40af,#1a56db);border-radius:0 0 10px 10px;font-size:13px;color:#fff;min-height:0}
+.level-total-bar:empty{display:none}
+.lvtotal-label{font-weight:600;letter-spacing:0.1px;opacity:0.85}
+.lvtotal-val{font-family:'DM Mono',monospace;font-size:13px}
+.lvtotal-val strong{font-size:15px}
 
 /* SEM BLOCK */
 .sem-block{border-top:1px solid #d9dee8}
@@ -593,7 +598,6 @@ function renderGrades() {
     block.innerHTML=`
       <div class="level-header">
         <h3>${lv.name}</h3>
-
         <div class="level-cwa">${lvStats.val!=='—'?`${mode==='CWA'?'CWA':'GPA'}: ${lvStats.val}${mode==='CWA'?'%':'/4.0'}`:'No data yet'}</div>
       </div>`;
     lv.semesters.forEach((sem,si)=>{
@@ -625,16 +629,21 @@ function renderGrades() {
         </div>
         <div class="add-course-row">
           <button class="add-btn" onclick="addCourse(${li},${si},false)">+ Add Course</button>
-          <button class="add-btn" onclick="addCourse(${li},${si},true)">+ Add Future Course</button>
         </div>`;
       block.appendChild(semDiv);
     });
+    // Level total footer
+    const lvFooter = document.createElement('div');
+    lvFooter.className = 'level-total-bar';
+    lvFooter.id = `lvtotal-${li}`;
+    block.appendChild(lvFooter);
     container.appendChild(block);
     lv.semesters.forEach((sem,si)=>{
       const tbody=document.getElementById(`tb-${li}-${si}`);
       sem.courses.forEach((_,ci)=>tbody.appendChild(makeRow(li,si,ci)));
       refreshSumRow(li,si);
     });
+    refreshLevelTotal(li);
   });
 }
 
@@ -686,6 +695,7 @@ function onUp(li,si,ci,field,val) {
   if(waEl) waEl.textContent=wa===null?'—':parseFloat(wa).toFixed(1);
   refreshSumRow(li,si);
   refreshLevelCwa(li);
+  refreshLevelTotal(li);
   save();
 }
 
@@ -703,6 +713,23 @@ function refreshLevelCwa(li) {
   if(!el) return;
   const ls=levelStats(levels[li]);
   el.textContent=ls.val!=='—'?`${mode==='CWA'?'CWA':'GPA'}: ${ls.val}${mode==='CWA'?'%':'/4.0'}`:'No data yet';
+  refreshLevelTotal(li);
+}
+
+function refreshLevelTotal(li) {
+  const el=document.getElementById(`lvtotal-${li}`);
+  if(!el) return;
+  const ls=levelStats(levels[li]);
+  const sfx=mode==='CWA'?'%':'/4.0';
+  const grade=ls.val!=='—'?toGrade(mode==='CWA'?parseFloat(ls.val):parseFloat(ls.val)*25):'—';
+  const badge=grade!=='—'?`<span class="badge g${grade}">${grade}</span>`:'';
+  if(ls.val==='—'){
+    el.innerHTML='';
+    return;
+  }
+  el.innerHTML=`
+    <span class="lvtotal-label">${levels[li].name} Overall</span>
+    <span class="lvtotal-val">${mode==='CWA'?'CWA':'GPA'}: <strong>${ls.val}${sfx}</strong> &nbsp;|&nbsp; Grade: ${badge}</span>`;
 }
 
 function setStatus(li,s) {
