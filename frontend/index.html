@@ -578,7 +578,12 @@ function overallStats() {
   return {val:v.toFixed(2),grade:g,cr,scores,futCr};
 }
 function gpToGrade(v) {
-  return v>=3.5?'A':v>=2.5?'B':v>=1.5?'C':v>=0.5?'D':'F';
+  if(v>=3.6) return 'A';
+  if(v>=3.0) return 'B+';
+  if(v>=2.5) return 'B';
+  if(v>=2.0) return 'C';
+  if(v>=1.0) return 'D';
+  return 'F';
 }
 function degreeClass(cwa) {
   if (cwa==='—') return null;
@@ -756,8 +761,13 @@ function refreshLevelTotal(li) {
   if(ls.val!=='—') {
     const v=parseFloat(ls.val);
     if(mode==='GPA') {
-      const r=GPA_SCALE.find(r=>v>=r.gp);
-      grade=r?r.g:'F';
+      // Map CGPA to grade using degree classification
+      if(v>=3.6) grade='A';
+      else if(v>=3.0) grade='B+';
+      else if(v>=2.5) grade='B';
+      else if(v>=2.0) grade='C';
+      else if(v>=1.0) grade='D';
+      else grade='F';
     } else {
       grade=toGrade(v);
     }
