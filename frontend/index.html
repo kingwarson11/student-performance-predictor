@@ -108,8 +108,8 @@ tbody tr:hover td{background:#f8f9fc}
 .cr-sel{padding:3px 5px;font-size:12px;border:1px solid #e0e4ed;border-radius:5px;background:#f8f9fc;color:#1a1d23;font-family:'DM Mono',monospace;outline:none}
 .computed{font-family:'DM Mono',monospace;font-size:12px;color:#374151}
 .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11.5px;font-weight:600;text-align:center;font-family:'DM Mono',monospace;min-width:26px}
-.gA{background:#dcfce7;color:#166534}.gB{background:#dbeafe;color:#1e40af}
-.gC{background:#fef9c3;color:#854d0e}.gD{background:#ffedd5;color:#9a3412}
+.gA{background:#dcfce7;color:#166534}.gB{background:#dbeafe;color:#1e40af}.gB\+{background:#bfdbfe;color:#1e3a8a}
+.gC{background:#fef9c3;color:#854d0e}.gC\+{background:#fde68a;color:#78350f}.gD{background:#ffedd5;color:#9a3412}.gD\+{background:#fed7aa;color:#7c2d12}
 .gF{background:#fee2e2;color:#991b1b}.gDash{color:#c0c8d8}
 .future-row td{background:#fafbff}
 .future-badge{font-size:10px;padding:1px 6px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;color:#1e40af;font-weight:600}
@@ -405,14 +405,39 @@ let mode = 'CWA';
 
 const LEVEL_NAMES = ['Level 100','Level 200','Level 300','Level 400'];
 const SEM_NAMES = ['Semester 1','Semester 2'];
-const DEGREE_CLASSES = [
+// CWA grading: A/B/C/D/F
+const CWA_SCALE = [{min:80,g:'A'},{min:70,g:'B'},{min:60,g:'C'},{min:50,g:'D'},{min:0,g:'F'}];
+const CWA_DEGREE = [
   {label:'First Class',min:80,cls:'first'},
-  {label:'Second Upper',min:75,cls:'upper'},
-  {label:'Second Lower',min:70,cls:'lower'},
-  {label:'Third Class',min:60,cls:'third'},
+  {label:'Second Upper',min:70,cls:'upper'},
+  {label:'Second Lower',min:60,cls:'lower'},
+  {label:'Pass',min:50,cls:'third'},
 ];
-const SCALE = [{min:80,g:'A'},{min:70,g:'B'},{min:60,g:'C'},{min:50,g:'D'},{min:0,g:'F'}];
-const GP = {A:4,B:3,C:2,D:1,F:0};
+
+// GPA grading: A/B+/B/C+/C/D+/D/F
+const GPA_SCALE = [
+  {min:80,g:'A',gp:4.0},
+  {min:75,g:'B+',gp:3.5},
+  {min:70,g:'B',gp:3.0},
+  {min:65,g:'C+',gp:2.5},
+  {min:60,g:'C',gp:2.0},
+  {min:55,g:'D+',gp:1.5},
+  {min:50,g:'D',gp:1.0},
+  {min:0,g:'F',gp:0.0},
+];
+const GPA_DEGREE = [
+  {label:'First Class',min:3.6,cls:'first'},
+  {label:'Second Upper',min:3.0,cls:'upper'},
+  {label:'Second Lower',min:2.5,cls:'lower'},
+  {label:'Third Class',min:2.0,cls:'third'},
+  {label:'Pass',min:1.0,cls:'pass'},
+];
+
+// Active scale/degree helpers
+function getScale() { return mode==='CWA' ? CWA_SCALE : GPA_SCALE; }
+function getDegreeClasses() { return mode==='CWA' ? CWA_DEGREE : GPA_DEGREE; }
+const DEGREE_CLASSES = CWA_DEGREE; // legacy ref
+const GP = {A:4,'B+':3.5,B:3,'C+':2.5,C:2,'D+':1.5,D:1,F:0};
 
 function defaultData() {
   return LEVEL_NAMES.map((name,li) => ({
@@ -477,8 +502,12 @@ let levels = load() || defaultData();
 // ─── GRADING ─────────────────────────────────────────────────────────────────
 function toGrade(s) {
   if (s===''||s===null||isNaN(s)) return '—';
-  for (const r of SCALE) if (parseFloat(s)>=r.min) return r.g;
+  const scale = getScale();
+  for (const r of scale) if (parseFloat(s)>=r.min) return r.g;
   return 'F';
+}
+function gradeToGP(g) {
+  return GP[g] !== undefined ? GP[g] : 0;
 }
 function calcScore(ca,exam) {
   if (ca===''&&exam==='') return '';
@@ -496,9 +525,10 @@ function semStats(sem) {
     if (c.ca===''&&c.exam==='') continue;
     const s=calcScore(c.ca,c.exam); if(s==='') continue;
     const g=toGrade(s);
-    let effectiveGP = GP[g];
+    let effectiveGP = gradeToGP(g);
     if (c.resit && effectiveGP > GP['D']) effectiveGP = GP['D']; // resit cap
-    pts += mode==='CWA' ? effectiveGP*c.crHrs*20 : effectiveGP*c.crHrs;
+    const sc1=parseFloat(calcScore(c.ca,c.exam));
+    pts += mode==='CWA' ? sc1*c.crHrs : effectiveGP*c.crHrs;
     cr += parseInt(c.crHrs)||0;
   }
   if (!cr) return {val:'—',grade:'—',cr:0};
@@ -514,9 +544,10 @@ function levelStats(lv) {
       if (c.ca===''&&c.exam==='') continue;
       const s=calcScore(c.ca,c.exam); if(s==='') continue;
       const g=toGrade(s);
-      let effectiveGP=GP[g];
+      let effectiveGP=gradeToGP(g);
       if(c.resit && effectiveGP>GP['D']) effectiveGP=GP['D'];
-      pts += mode==='CWA'?effectiveGP*c.crHrs*20:effectiveGP*c.crHrs;
+      const sc2=parseFloat(calcScore(c.ca,c.exam));
+      pts += mode==='CWA'?sc2*c.crHrs:effectiveGP*c.crHrs;
       cr+=parseInt(c.crHrs)||0;
     }
   }
@@ -533,9 +564,10 @@ function overallStats() {
         if (h===0||c.ca===''&&c.exam==='') continue;
         const s=calcScore(c.ca,c.exam); if(s==='') continue;
         const g=toGrade(s);
-        let effectiveGP=GP[g];
+        let effectiveGP=gradeToGP(g);
         if(c.resit&&effectiveGP>GP['D']) effectiveGP=GP['D'];
-        pts+=mode==='CWA'?effectiveGP*h*20:effectiveGP*h;
+        const sc3=parseFloat(calcScore(c.ca,c.exam));
+      pts+=mode==='CWA'?sc3*h:effectiveGP*h;
         cr+=h; scores.push(parseFloat(s));
       }
     }
@@ -552,10 +584,8 @@ function degreeClass(cwa) {
   if (cwa==='—') return null;
   const v=parseFloat(cwa);
   if (mode==='GPA') {
-    if(v>=3.5)return DEGREE_CLASSES[0];
-    if(v>=3.0)return DEGREE_CLASSES[1];
-    if(v>=2.5)return DEGREE_CLASSES[2];
-    if(v>=2.0)return DEGREE_CLASSES[3];
+    const dc = getDegreeClasses();
+    for(const d of dc) if(v>=d.min) return d;
     return null;
   }
   for (const d of DEGREE_CLASSES) if(v>=d.min) return d;
@@ -721,7 +751,7 @@ function refreshLevelTotal(li) {
   if(!el) return;
   const ls=levelStats(levels[li]);
   const sfx=mode==='CWA'?'%':'/4.0';
-  const grade=ls.val!=='—'?toGrade(mode==='CWA'?parseFloat(ls.val):parseFloat(ls.val)*25):'—';
+  const grade=ls.val!=='—'?toGrade(parseFloat(ls.val)):'—';
   const badge=grade!=='—'?`<span class="badge g${grade}">${grade}</span>`:'';
   if(ls.val==='—'){
     el.innerHTML='';
@@ -903,7 +933,7 @@ function renderTarget() {
     if(h===0||c.ca===''&&c.exam==='') return;
     const s=calcScore(c.ca,c.exam); if(s==='') return;
     const g=toGrade(s);
-    let egp=GP[g]; if(c.resit&&egp>GP['D']) egp=GP['D'];
+    let egp=gradeToGP(g); if(c.resit&&egp>GP['D']) egp=GP['D'];
     donePoints+=mode==='CWA'?egp*h*20:egp*h;
     doneCr+=h;
   })));
@@ -926,7 +956,7 @@ function renderTarget() {
     </div>`;
 
   let cardsHtml='<div class="target-grid">';
-  DEGREE_CLASSES.forEach(d=>{
+  getDegreeClasses().forEach(d=>{
     const targetCWA=mode==='CWA'?d.min:(d.min/25); // convert % to GPA approx
     if(doneCr===0){
       cardsHtml+=`<div class="target-card tc-${d.cls}">
@@ -989,13 +1019,13 @@ function runWhatif() {
     if(c.future||h===0||c.ca===''&&c.exam==='') return;
     const s=calcScore(c.ca,c.exam); if(s==='') return;
     const g=toGrade(s);
-    let egp=GP[g]; if(c.resit&&egp>GP['D']) egp=GP['D'];
+    let egp=gradeToGP(g); if(c.resit&&egp>GP['D']) egp=GP['D'];
     donePoints+=mode==='CWA'?egp*h*20:egp*h;
     doneCr+=h;
   })));
 
   const futGrade=toGrade(wiScore);
-  const futGP=GP[futGrade]==='undefined'?0:GP[futGrade]||0;
+  const futGP=gradeToGP(futGrade);
   const futPoints=mode==='CWA'?futGP*wiCr*20:futGP*wiCr;
   const totalCr=doneCr+wiCr;
   if(totalCr===0){document.getElementById('wiResult').innerHTML='No data.';return;}
@@ -1144,7 +1174,7 @@ if(!localStorage.getItem('edupredict_v3')) {
 
 // ─── SUPABASE AUTH ───────────────────────────────────────────────────────────
 const SUPA_URL = 'https://qizrspqyghjomydqybet.supabase.co';
-const SUPA_KEY = 'sb_publishable_RiSKpQ8M1MF-1GS93YZN2Q_Czydnfar';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpenJzcHF5Z2hqb215ZHF5YmV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1Njk3NDQsImV4cCI6MjA5NTE0NTc0NH0.gDO0CuS95-syJZPlCRmaUE5DlYSeKV3mhEZzVig43ZQ';
 
 async function supaFetch(path, method='GET', body=null, token=null) {
   const headers = {
