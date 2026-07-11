@@ -751,7 +751,17 @@ function refreshLevelTotal(li) {
   if(!el) return;
   const ls=levelStats(levels[li]);
   const sfx=mode==='CWA'?'%':'/4.0';
-  const grade=ls.val!=='—'?toGrade(parseFloat(ls.val)):'—';
+  // In GPA mode, derive grade letter from GPA value using GPA scale
+  let grade='—';
+  if(ls.val!=='—') {
+    const v=parseFloat(ls.val);
+    if(mode==='GPA') {
+      const r=GPA_SCALE.find(r=>v>=r.gp);
+      grade=r?r.g:'F';
+    } else {
+      grade=toGrade(v);
+    }
+  }
   const badge=grade!=='—'?`<span class="badge g${grade}">${grade}</span>`:'';
   if(ls.val==='—'){
     el.innerHTML='';
